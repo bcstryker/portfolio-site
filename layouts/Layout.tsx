@@ -1,11 +1,11 @@
 import {FC} from "react";
 import type {NextPage} from "next";
 import type {AppProps} from "next/app";
-// import {useRouter} from "next/router";
 import LeftNavbar from "../components/LeftNavbar";
 import TopNavbar from "../components/TopNavbar";
 import {Provider} from "react-redux";
 import {store} from "../store";
+import ErrorBoundary from "components/ErrorBoundary";
 
 // import "react-toastify/dist/ReactToastify.css";
 
@@ -27,10 +27,12 @@ const Layout: FC<Props> = ({Component, pageProps}) => {
   return (
     <Provider store={store}>
       <LeftNavbar />
-      <main className="sm:pl-64">
+      <main className="pl-64">
         <div className="px-4 py-2 sm:px-10 sm:py-10 text-foreground">
           <TopNavbar PageTitle={PageTitle} />
-          <Component {...pageProps} />
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>
         </div>
       </main>
     </Provider>

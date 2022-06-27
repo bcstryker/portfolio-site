@@ -23,16 +23,24 @@ const itemsFromBackend: item[] = [
 
 const colsFromBackend: kanbanCols = {
   [uuid()]: {
-    name: "Todo",
+    name: "Backlog",
     items: itemsFromBackend,
+  },
+  [uuid()]: {
+    name: "Ready",
+    items: [],
   },
   [uuid()]: {
     name: "In Progress",
     items: [],
   },
+  [uuid()]: {
+    name: "Done",
+    items: [],
+  },
 };
 
-interface item {
+export interface item {
   id: string;
   content: string;
 }

@@ -6,7 +6,7 @@ interface Props {
 }
 
 const TopNavbar: FC<Props> = ({PageTitle}) => (
-  <div className="flex grow sm:ml-64 xs:ml-8 mb-8 sm:mb-12">
+  <div className="flex grow xs:ml-8 mb-8 sm:mb-12">
     <div className="flex-initial sm:pr-4">
       <PageTitle />
     </div>

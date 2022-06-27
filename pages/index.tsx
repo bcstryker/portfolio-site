@@ -4,8 +4,6 @@ import {StrykerPage} from "../types";
 const Home: StrykerPage = () => {
   return (
     <>
-      {/* <div className="block xl:flex mb-8 sm:mb-10">
-        <div className="flex justify-center items-center"> */}
       <div className="block xl:flex mb-8 sm:mb-10">
         <div className="w-full flex justify-center">
           <h1 className="text-xl text-foreground-alt-100">Welcome!</h1>

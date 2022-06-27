@@ -1,7 +1,7 @@
 import {FC, useState} from "react";
 import Kanban from "../features/productivity/Kanban";
 import {StrykerPage} from "../types";
-import {uuid} from "uuidv4";
+import {v4 as uuid} from "uuid";
 
 const Home: StrykerPage = () => {
   const [cols, setCols] = useState(colsFromBackend);
@@ -9,8 +9,7 @@ const Home: StrykerPage = () => {
     <>
       <div className="block xl:flex mb-8 sm:mb-10">
         <div className="w-full flex justify-center">
-          <h1 className="text-xl text-foreground-alt-100">Welcome!</h1>
-          <Kanban cols={cols} />
+          <Kanban cols={cols} setCols={setCols} />
         </div>
       </div>
     </>
@@ -27,11 +26,15 @@ const colsFromBackend: kanbanCols = {
     name: "Todo",
     items: itemsFromBackend,
   },
+  [uuid()]: {
+    name: "In Progress",
+    items: [],
+  },
 };
 
 interface item {
-  id: String;
-  content: String;
+  id: string;
+  content: string;
 }
 
 export interface kanbanCols {

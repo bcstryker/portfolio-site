@@ -18,6 +18,8 @@
     "babel-plugin-styled-components": "^2.0.7",
     "next": "12.1.6",
     "react": "18.2.0",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-dnd": "^16.0.1",
     "react-dom": "18.2.0",
     "react-redux": "^8.0.2",
     "react-select": "^5.3.2",
@@ -42,5 +44,11 @@
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.2"
+  },
+  "lint-staged": {
+    "*.{json,js,jsx,ts,tsx}": [
+      "yarn lint",
+      "yarn format"
+    ]
   }
 }

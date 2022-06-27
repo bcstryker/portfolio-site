@@ -18,11 +18,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": ".",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "incremental": true
   },
   "exclude": [
-    "node_modules",
-    "v1/containers/Contracts/**.ts"
+    "node_modules"
   ],
   "include": [
     "next-env.d.ts",

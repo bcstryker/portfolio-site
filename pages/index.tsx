@@ -18,8 +18,8 @@ const Home: StrykerPage = () => {
 const PageTitle: FC = () => {
   return (
     <>
-      <h1 className="font-title font-medium text-2xl sm:text-3xl pt-2">{"Home Page"}</h1>
-      <h2 className="font-body font-normal text-foreground-alt-200 text-sm sm:text-base leading-4 sm:leading-6 mt-1">
+      <h1 className="font-title font-medium text-foreground-alt-100 text-2xl sm:text-3xl pt-2">{"Home Page"}</h1>
+      <h2 className="font-body font-normal text-foreground-alt-100 text-sm sm:text-base leading-4 sm:leading-6 mt-1">
         {"Welcome to this website!"}
       </h2>
     </>

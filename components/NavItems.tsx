@@ -16,12 +16,12 @@ interface Props {
   onClick?: MouseEventHandler;
 }
 
-const NavBar: FC<Props> = ({onClick}) => {
+const NavItems: FC<Props> = ({onClick}) => {
   const navigation = [
     {name: "Home", href: "/", icon: TemplateIcon},
     {
-      name: "Lightning",
-      href: "/a",
+      name: "Productivity",
+      href: "/productivity",
       icon: LightningBoltIcon,
     },
     {name: "People", href: "/b", icon: UserGroupIcon},
@@ -41,4 +41,4 @@ const NavBar: FC<Props> = ({onClick}) => {
   );
 };
 
-export default NavBar;
+export default NavItems;

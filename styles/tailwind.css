@@ -4,12 +4,12 @@
 
 @layer base {
   :root {
-    --color-accent: 225, 85, 47;
-    --color-accent-light: 255, 147, 117;
-    --color-background: 3, 19, 22;
-    --color-background-glow: 49, 59, 60;
-    --color-background-light: 15, 31, 34;
-    --color-background-lightest: 23, 38, 40;
+    --color-accent: 129, 47, 245;
+    --color-accent-light: 166, 108, 245;
+    --color-background: 62, 76, 99;
+    --color-background-glow: 5, 245, 225;
+    --color-background-light: 102, 118, 145;
+    --color-background-lightest: 166, 188, 222;
     --color-foreground: 255, 255, 255;
     --color-foreground-button: 255, 255, 255;
     --color-foreground-alt-100: 224, 225, 226;
@@ -17,8 +17,8 @@
     --color-foreground-alt-300: 134, 148, 152;
     --color-foreground-alt-400: 43, 56, 59;
     --color-foreground-alt-500: 31, 45, 48;
-    --color-primary: 72, 194, 72;
-    --color-primary-light: 94, 237, 93;
-    --color-primary-dark: 6, 85, 6;
+    --color-primary: 0, 80, 209;
+    --color-primary-light: 56, 131, 252;
+    --color-primary-dark: 1, 42, 107;
   }
 }

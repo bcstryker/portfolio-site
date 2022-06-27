@@ -1,11 +1,10 @@
-import React, { FC } from "react";
-import Select, { StylesConfig } from "react-select";
-import { useTranslation } from "next-i18next";
-import { useSelector } from "react-redux";
+import React, {FC} from "react";
+import Select, {StylesConfig} from "react-select";
+import {useSelector} from "react-redux";
 
-import { useAppDispatch } from "v2/store";
-import { ThemeSelectors, setCurrentTheme, CurrentTheme } from "v2/store/theme";
-import { rareThemes } from "./themes";
+import {rareThemes} from "./themes";
+import {useAppDispatch} from "../../store";
+import {CurrentTheme, setCurrentTheme, ThemeSelectors} from "../../store/theme";
 
 const styles: StylesConfig<CurrentTheme> = {
   control: (styles) => ({
@@ -33,7 +32,7 @@ const styles: StylesConfig<CurrentTheme> = {
     zIndex: 100,
     boxShadow: "0 0 0 1px rgb(var(--color-background-lightest))",
   }),
-  option: (styles, { isFocused }) => ({
+  option: (styles, {isFocused}) => ({
     ...styles,
     backgroundColor: isFocused ? "rgb(var(--color-background-lightest))" : undefined,
     borderRadius: 10,
@@ -52,7 +51,6 @@ const styles: StylesConfig<CurrentTheme> = {
 };
 
 const ThemeSelect: FC = () => {
-  const { t } = useTranslation("common");
   const theme = useSelector(ThemeSelectors.selectTheme);
   const dispatch = useAppDispatch();
 
@@ -62,7 +60,7 @@ const ThemeSelect: FC = () => {
         IndicatorSeparator: () => null,
       }}
       isMulti={false}
-      noOptionsMessage={() => t("v2.farms.noResults")}
+      noOptionsMessage={() => "No Results."}
       onChange={(newTheme) => dispatch(setCurrentTheme(newTheme as CurrentTheme))}
       options={rareThemes}
       defaultValue={rareThemes[0]}

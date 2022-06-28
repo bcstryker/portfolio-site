@@ -6,18 +6,13 @@ import {PlusIcon} from "@heroicons/react/solid";
 import {v4 as uuid} from "uuid";
 
 const Kanban: FC<{cols: kanbanCols; setCols: SetFunction}> = ({cols, setCols}) => (
-  <div className="justify-center flex flex-col">
+  <div className="w-full flex justify-evenly rounded-xl border">
     <DragDropContext onDragEnd={(result) => onDragEnd(result, cols, setCols)}>
       {Object.entries(cols).map(([colId, col]) => (
-        <div key={col.name} className="px-4">
+        <div key={col.name} className="w-full px-4 py-8">
           <div className="flex justify-between">
             <h2>{col.name}</h2>
-            <div className="hover:bg-background-glow">
-              <PlusIcon
-                className="h-4 w-4 hover:fill-background-glow cursor-pointer"
-                onClick={() => addCard(cols, setCols, colId)}
-              />
-            </div>
+            <PlusIcon className="h-4 w-4 cursor-pointer" onClick={() => addCard(cols, setCols, colId)} />
           </div>
           <Droppable key={colId} droppableId={colId}>
             {(provided, snapshot) => (
@@ -54,12 +49,20 @@ const Kanban: FC<{cols: kanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
                               ...provided.draggableProps.style,
                             }}
                           >
-                            {item.content}
+                            <p
+                              id={item.id}
+                              contentEditable="true"
+                              onChange={() => editCard(colId, item.id, cols, setCols)}
+                              onBlur={() => editCard(colId, item.id, cols, setCols)}
+                              className="cursor-text focus:outline-none whitespace-pre"
+                            >
+                              {item.content}
+                            </p>
                             {/* <input
                               id={item.id}
-                              className="bg-foreground-alt-400 text-foreground-alt-200 focus:outline-none"
+                              className={`w-full bg-foreground-alt-400 rounded-xl break-normal text-foreground-alt-200 focus:outline-none`}
                               placeholder={item.content}
-                              onKeyUp={(event) => editCard(event, colId, item.id, cols, setCols)}
+                              // onKeyUp={(event) => editCard(event, colId, item.id, cols, setCols)}
                               onSubmit={(text) => editCard(text, colId, item.id, cols, setCols)}
                             /> */}
                           </div>
@@ -128,15 +131,16 @@ const addCard = (cols: kanbanCols, setCols: SetFunction, id: string) => {
 };
 
 // WIP
-const editCard = (event: any, colId: string, itemId: string, cols: kanbanCols, setCols: SetFunction) => {
-  if (event.code !== "Enter") return;
-  const test = document.getElementById(itemId)?.innerHTML || "";
-  console.log(test);
+const editCard = (colId: string, itemId: string, cols: kanbanCols, setCols: SetFunction) => {
+  const text = document.getElementById(itemId)?.innerText;
   const col = cols[colId];
   const copiedItems = col ? [...col.items] : [];
-  const thisTask = copiedItems.find((t) => t.id == itemId) || ({} as item);
-  const updatedTask: item = {...thisTask, content: test};
-  copiedItems.splice(cols[colId].items.indexOf(thisTask), 0, updatedTask);
+  for (let n = 0; n < copiedItems.length; n++) if (copiedItems[n].id === itemId) copiedItems[n].content = text || "";
+  // console.log(thisTask);
+  // if (text && thisTask) {
+  //   const updatedTask: item = {...thisTask, content: text};
+  //   copiedItems.splice(0, 0, updatedTask);
+  // }
 
   setCols({
     ...cols,

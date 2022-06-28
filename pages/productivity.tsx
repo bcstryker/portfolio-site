@@ -16,15 +16,15 @@ const Home: StrykerPage = () => {
   );
 };
 
-const itemsFromBackend: item[] = [
-  {id: uuid(), content: "First Task."},
-  {id: uuid(), content: "Second Task."},
-];
+// const itemsFromBackend: item[] = [
+//   {id: uuid(), content: "First Task."},
+//   {id: uuid(), content: "Second Task."},
+// ];
 
 const colsFromBackend: kanbanCols = {
   [uuid()]: {
     name: "Backlog",
-    items: itemsFromBackend,
+    items: [],
   },
   [uuid()]: {
     name: "Ready",

@@ -1,12 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
 import {FC} from "react";
 
 import NavItems from "./NavItems";
 
-const LeftNavbar: FC = () => {
+const LeftNavbar: FC<{className?: string}> = ({className}) => {
   return (
-    <div className="hidden sm:flex sm:flex-col sm:w-64 sm:fixed sm:inset-y-0">
+    <div className={"hidden sm:flex sm:flex-col sm:w-64 sm:fixed sm:inset-y-0" + ` ${className}`}>
       <div className="flex-1 flex flex-col min-h-0 bg-background py-8 border-r border-foreground-alt-500">
         <div className="flex items-center justify-center h-16 flex-shrink-0 px-4 mb-12">
           <div className="w-44">

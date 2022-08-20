@@ -27,11 +27,13 @@ const Layout: FC<Props> = ({Component, pageProps}) => {
   return (
     <Provider store={store}>
       <LeftNavbar />
-      <main className="pl-64">
+      <main>
         <div className="px-4 py-2 sm:px-10 sm:py-10 text-foreground">
-          <TopNavbar PageTitle={PageTitle} />
           <ErrorBoundary>
-            <Component {...pageProps} />
+            <div className="pl-64">
+              <TopNavbar PageTitle={PageTitle} />
+              <Component {...pageProps} />
+            </div>
           </ErrorBoundary>
         </div>
       </main>

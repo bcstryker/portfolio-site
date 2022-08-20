@@ -5,7 +5,7 @@ const Home: StrykerPage = () => {
   return (
     <>
       <div className="block xl:flex mb-8 sm:mb-10">
-        <div className="w-full flex justify-center">
+        <div className="w-full xl:w-4/5 flex justify-center">
           <h1 className="text-xl text-foreground-alt-100">Welcome!</h1>
         </div>
       </div>

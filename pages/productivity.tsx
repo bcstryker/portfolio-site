@@ -4,7 +4,7 @@ import {StrykerPage} from "../types";
 import {v4 as uuid} from "uuid";
 
 const Home: StrykerPage = () => {
-  const [cols, setCols] = useState(colsFromBackend);
+  const [cols, setCols] = useState(testBoard);
   return (
     <>
       <div className="block xl:flex mb-8 sm:mb-10">
@@ -16,12 +16,7 @@ const Home: StrykerPage = () => {
   );
 };
 
-// const itemsFromBackend: item[] = [
-//   {id: uuid(), content: "First Task."},
-//   {id: uuid(), content: "Second Task."},
-// ];
-
-const colsFromBackend: kanbanCols = {
+const testBoard: KanbanCols = {
   [uuid()]: {
     name: "Backlog",
     items: [],
@@ -40,15 +35,15 @@ const colsFromBackend: kanbanCols = {
   },
 };
 
-export interface item {
+export interface KanbanCard {
   id: string;
   content: string;
 }
 
-export interface kanbanCols {
+export interface KanbanCols {
   [uuid: string]: {
     name: string;
-    items: item[];
+    items: KanbanCard[];
   };
 }
 

@@ -1,11 +1,11 @@
-import {kanbanCols, item} from "pages/productivity";
+import {KanbanCols} from "pages/productivity";
 import {FC} from "react";
 import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
 import {SetFunction} from "types";
 import {PlusIcon} from "@heroicons/react/solid";
 import {v4 as uuid} from "uuid";
 
-const Kanban: FC<{cols: kanbanCols; setCols: SetFunction}> = ({cols, setCols}) => (
+const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) => (
   <div className="w-full flex justify-evenly rounded-xl border">
     <DragDropContext onDragEnd={(result) => onDragEnd(result, cols, setCols)}>
       {Object.entries(cols).map(([colId, col]) => (
@@ -81,7 +81,7 @@ const Kanban: FC<{cols: kanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
 );
 
 // this function is done and works well, no further work needed right now
-const onDragEnd = (result: DropResult, cols: kanbanCols, setCols: SetFunction) => {
+const onDragEnd = (result: DropResult, cols: KanbanCols, setCols: SetFunction) => {
   if (!result.destination) return;
   const {source, destination} = result;
   if (source.droppableId !== destination.droppableId) {
@@ -117,8 +117,7 @@ const onDragEnd = (result: DropResult, cols: kanbanCols, setCols: SetFunction) =
   }
 };
 
-// This will probably be enough for adding a card as long as I can figure out editCard() functionality
-const addCard = (cols: kanbanCols, setCols: SetFunction, id: string) => {
+const addCard = (cols: KanbanCols, setCols: SetFunction, id: string) => {
   const col = cols[id];
   const copiedItems = [...col.items];
   setCols({
@@ -131,7 +130,7 @@ const addCard = (cols: kanbanCols, setCols: SetFunction, id: string) => {
 };
 
 // WIP
-const editCard = (colId: string, itemId: string, cols: kanbanCols, setCols: SetFunction) => {
+const editCard = (colId: string, itemId: string, cols: KanbanCols, setCols: SetFunction) => {
   const text = document.getElementById(itemId)?.innerText;
   const col = cols[colId];
   const copiedItems = col ? [...col.items] : [];

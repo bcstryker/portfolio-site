@@ -1,9 +1,27 @@
 import {cloneDeep} from "lodash";
-import {iKanbanBoards} from "types";
 import {UserData} from "./user";
+import {KanbanCols} from "../types";
+import {v4 as uuid} from "uuid";
 
-export const baseTokenObject: Partial<UserData> = {
-  kanbanData: {} as iKanbanBoards,
+export const baseObject: Partial<UserData> = {
+  kanbanCols: {
+    [uuid()]: {
+      name: "Backlog",
+      items: [],
+    },
+    [uuid()]: {
+      name: "Ready",
+      items: [],
+    },
+    [uuid()]: {
+      name: "In Progress",
+      items: [],
+    },
+    [uuid()]: {
+      name: "Done",
+      items: [],
+    },
+  } as KanbanCols,
 };
 
 /**

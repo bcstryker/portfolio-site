@@ -1,69 +1,88 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {KanbanCard, KanbanCols} from "types";
 import {RootState} from ".";
+import {v4 as uuid} from "uuid";
+import {DraggableLocation} from "react-beautiful-dnd";
 
 export interface UserData {
-  kanbanData: any;
+  kanbanCols: KanbanCols;
 }
 
-interface UserState {
-  nonce: number;
-  isFetching: boolean;
+export interface UserState {
+  kanbanCols: KanbanCols;
 }
 
 const initialState: UserState = {
-  nonce: 0,
-  isFetching: true,
+  kanbanCols: {
+    //} as KanbanCols,
+    [uuid()]: {
+      name: "Backlog",
+      items: [],
+    },
+    [uuid()]: {
+      name: "Ready",
+      items: [],
+    },
+    [uuid()]: {
+      name: "In Progress",
+      items: [],
+    },
+    [uuid()]: {
+      name: "Done",
+      items: [],
+    },
+  } as KanbanCols,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setData: (state, action: PayloadAction<{account: string; data: UserData}>) => {
-      const {account, data} = action.payload;
+    setKanban: (state, action: PayloadAction<{colId: string; kanbanData: KanbanCols}>) => {
+      const {kanbanCols} = action.payload.kanbanData;
+      const tmp = state.kanbanCols;
+      tmp.items = {...tmp.items, items: kanbanCols.items};
     },
-    /**
-     * This action allows us to merge in partial user token data. A good example of this
-     * is when we perform a minimal user model refresh only for the active chain. This approach
-     * protects us against losing state that doesn't exist on the current chain, e.g.
-     * PICKLE balances.
-     */
-    setDillData: (state, action: PayloadAction<{account: string; data: Partial<any>}>) => {
-      const {account, data} = action.payload;
-      // const accountData = state.accounts[account];
-
-      // if (!accountData) return;
-
-      // state.accounts[account] = accountData;
+    addCard: (state, action: PayloadAction<{colId: string; newCard: KanbanCard}>) => {
+      const {colId, newCard} = action.payload;
+      const tmp = state.kanbanCols;
+      tmp[colId].items.push(newCard);
     },
-
-    setIsFetching: (state, action: PayloadAction<boolean>) => {
-      state.isFetching = action.payload;
-    },
-    refresh: (state) => {
-      state.nonce = state.nonce + 1;
+    moveCard: (
+      state,
+      action: PayloadAction<{cols: KanbanCols; source: DraggableLocation; destination: DraggableLocation}>
+    ) => {
+      const {cols, source, destination} = action.payload;
+      const tmp = state.kanbanCols;
+      const sourceCol = cols[source.droppableId];
+      const destCol = cols[destination.droppableId];
+      const sourceItems = [...sourceCol.items];
+      const destItems = [...destCol.items];
+      const [removed] = sourceItems.splice(destination.index, 1);
+      destItems.splice(destination.index, 0, removed);
+      tmp[source.droppableId].items = sourceItems;
+      tmp[destination.droppableId].items = destItems;
     },
   },
 });
 
-const {refresh, setData, setIsFetching, setDillData} = userSlice.actions;
+const {setKanban, addCard, moveCard} = userSlice.actions;
 export const UserActions = {
-  refresh,
-  setData,
-  setDillData,
-  setIsFetching,
+  setKanban,
+  addCard,
+  moveCard,
 };
 
 /**
  * Selectors
  */
-const selectData = (state: RootState, account: string | null | undefined) => {
-  if (!account) return;
-  return state.user;
+
+const selectKanban = (state: RootState) => {
+  return state.user.kanbanCols;
 };
 
 export const UserSelectors = {
-  selectData,
+  selectKanban,
 };
 
 export default userSlice.reducer;

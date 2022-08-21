@@ -1,10 +1,14 @@
-import {FC, useState} from "react";
+import {FC, useEffect, useState} from "react";
 import Kanban from "../features/productivity/Kanban";
-import {StrykerPage} from "../types";
-import {v4 as uuid} from "uuid";
+import {KanbanCols, StrykerPage} from "../types";
+import {useSelector} from "react-redux";
+import {RootState} from "store";
+// import {v4 as uuid} from "uuid";
 
 const Home: StrykerPage = () => {
-  const [cols, setCols] = useState(testBoard);
+  const {kanbanCols} = useSelector((state: RootState) => state.user);
+  const [cols, setCols] = useState<KanbanCols>({} as KanbanCols);
+  useEffect(() => setCols(kanbanCols), [kanbanCols]);
   return (
     <>
       <div className="block xl:flex mb-8 sm:mb-10">
@@ -16,36 +20,24 @@ const Home: StrykerPage = () => {
   );
 };
 
-const testBoard: KanbanCols = {
-  [uuid()]: {
-    name: "Backlog",
-    items: [],
-  },
-  [uuid()]: {
-    name: "Ready",
-    items: [],
-  },
-  [uuid()]: {
-    name: "In Progress",
-    items: [],
-  },
-  [uuid()]: {
-    name: "Done",
-    items: [],
-  },
-};
-
-export interface KanbanCard {
-  id: string;
-  content: string;
-}
-
-export interface KanbanCols {
-  [uuid: string]: {
-    name: string;
-    items: KanbanCard[];
-  };
-}
+// const testBoard: KanbanCols = {
+//   [uuid()]: {
+//     name: "Backlog",
+//     items: [],
+//   },
+//   [uuid()]: {
+//     name: "Ready",
+//     items: [],
+//   },
+//   [uuid()]: {
+//     name: "In Progress",
+//     items: [],
+//   },
+//   [uuid()]: {
+//     name: "Done",
+//     items: [],
+//   },
+// };
 
 const PageTitle: FC = () => {
   return (

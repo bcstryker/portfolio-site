@@ -1,6 +1,6 @@
 import {FC, useEffect} from "react";
 import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
-import {KanbanCols, SetFunction} from "types";
+import {KanbanCard, KanbanCols, SetFunction} from "types";
 import {PlusIcon} from "@heroicons/react/solid";
 import {v4 as uuid} from "uuid";
 import {useAppDispatch, AppDispatch} from "store";
@@ -60,8 +60,8 @@ const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
                               <p
                                 id={item.id}
                                 contentEditable="true"
-                                onChange={() => editCard(colId, item.id, cols, setCols)}
-                                onBlur={() => editCard(colId, item.id, cols, setCols)}
+                                onChange={() => editCard(colId, item.id, cols, setCols, dispatch)}
+                                onBlur={() => editCard(colId, item.id, cols, setCols, dispatch)}
                                 className="cursor-text focus:outline-none whitespace-pre"
                               >
                                 {item.content}
@@ -124,6 +124,7 @@ const onDragEnd = (result: DropResult, cols: KanbanCols, setCols: SetFunction, d
         items: copiedItems,
       },
     });
+    // add dispatch call here to support reorganizing cols in user store
   }
 };
 
@@ -142,17 +143,15 @@ const addCard = (cols: KanbanCols, setCols: SetFunction, id: string, dispatch: A
   dispatch(UserActions.addCard({colId: id, newCard: newTask}));
 };
 
-// WIP
-const editCard = (colId: string, itemId: string, cols: KanbanCols, setCols: SetFunction) => {
+const editCard = (colId: string, itemId: string, cols: KanbanCols, setCols: SetFunction, dispatch: AppDispatch) => {
   const text = document.getElementById(itemId)?.innerText;
   const col = cols[colId];
   const copiedItems = col ? [...col.items] : [];
-  for (let n = 0; n < copiedItems.length; n++) if (copiedItems[n].id === itemId) copiedItems[n].content = text || "";
-  // console.log(thisTask);
-  // if (text && thisTask) {
-  //   const updatedTask: item = {...thisTask, content: text};
-  //   copiedItems.splice(0, 0, updatedTask);
-  // }
+  for (let n = 0; n < copiedItems.length; n++)
+    if (copiedItems[n].id === itemId) {
+      copiedItems[n] = {...copiedItems[n], content: text || ""};
+    }
+  dispatch(UserActions.editCard({colId: colId, items: copiedItems}));
 
   setCols({
     ...cols,

@@ -38,11 +38,6 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setKanban: (state, action: PayloadAction<{colId: string; kanbanData: KanbanCols}>) => {
-      const {kanbanCols} = action.payload.kanbanData;
-      const tmp = state.kanbanCols;
-      tmp.items = {...tmp.items, items: kanbanCols.items};
-    },
     addCard: (state, action: PayloadAction<{colId: string; newCard: KanbanCard}>) => {
       const {colId, newCard} = action.payload;
       const tmp = state.kanbanCols;
@@ -63,14 +58,27 @@ const userSlice = createSlice({
       tmp[source.droppableId].items = sourceItems;
       tmp[destination.droppableId].items = destItems;
     },
+    editCard: (state, action: PayloadAction<{colId: string; items: KanbanCard[]}>) => {
+      const {colId, items} = action.payload;
+      const col = state.kanbanCols[colId];
+      col.items = items;
+    },
+    //   setCols({
+    //   ...cols,
+    //   [colId]: {
+    //     ...col,
+    //     items: copiedItems,
+    //   },
+    // });
   },
 });
 
-const {setKanban, addCard, moveCard} = userSlice.actions;
+const {setKanban, addCard, moveCard, editCard} = userSlice.actions;
 export const UserActions = {
   setKanban,
   addCard,
   moveCard,
+  editCard,
 };
 
 /**

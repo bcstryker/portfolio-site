@@ -17,13 +17,11 @@ export interface CurrentTheme {
 export interface ThemeState {
   type: ThemeType;
   current: CurrentTheme;
-  isConfettiOn: boolean;
 }
 
 const initialState: ThemeState = {
   type: ThemeType.Dark,
-  current: {label: "9-to-5", value: "9-to-5"},
-  isConfettiOn: false,
+  current: {label: "Dark", value: "dark"},
 };
 
 const themeSlice = createSlice({

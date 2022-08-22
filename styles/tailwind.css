@@ -6,6 +6,8 @@
   :root {
     --color-accent: 129, 47, 245;
     --color-accent-light: 166, 108, 245;
+    --color-accent-yellow: 253, 223, 71;
+    --color-accent-green: 131, 204, 22;
     --color-background: 62, 76, 99;
     --color-background-glow: 5, 245, 225;
     --color-background-light: 102, 118, 145;

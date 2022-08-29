@@ -1,38 +1,28 @@
-import {Dispatch, FC, SetStateAction, useEffect, useState} from "react";
+import {FC} from "react";
+import {iGuess} from "types";
 import {classNames} from "utils";
-import {iGuess} from ".";
 import {v4 as uuid} from "uuid";
 
-const GuessTable: FC<{guesses: iGuess[]; setGuesses: Dispatch<SetStateAction<iGuess[]>>; answer: string}> = ({
-  // game,
-  guesses,
-  setGuesses,
-  answer,
-}) => {
-  const [currentGuess, setCurrentGuess] = useState<string[]>([]);
-  const [gameOver, setGameOver] = useState(false);
-  useEffect(() => {
-    window.addEventListener("keydown", (e) => {
-      if (/[A-Za-z]/.test(e.key) && e.key.length == 1)
-        setCurrentGuess((guess) => (guess.length >= 5 ? [...guess] : [...guess, e.key.toUpperCase()]));
-      if (e.key.toLowerCase() == "backspace") setCurrentGuess((c) => c.slice(0, -1));
-      if (e.key.toLowerCase() == "enter") {
-        console.log("Guess when pressing enter: ", currentGuess);
-        guess(currentGuess, guesses, setGuesses, answer);
-      }
-    });
-  }, []);
-  // useEffect(() => console.log(currentGuess), [currentGuess]);
+const GuessTable: FC<{
+  currentGuess: string[];
+  guesses: iGuess[];
+  gameOver: boolean;
+}> = ({currentGuess, guesses, gameOver}) => {
   return (
     <table className="table-auto">
       <tbody>
         {guesses.map((w) => {
           let guessString = "";
           w.word.forEach((L) => (guessString += L.letter));
-          return <GuessRow key={guessString} guess={w} />;
+          return <GuessRow key={uuid()} guess={w} />;
         })}
-        <InputRow currentGuess={currentGuess} />
-        <BlankRows nRows={5 - guesses.length} />
+        {!gameOver && (
+          <>
+            <InputRow currentGuess={currentGuess} />
+            <BlankRows nRows={5 - guesses.length} />
+          </>
+        )}
+        {/* {gameOver && <GameOverModal />} */}
       </tbody>
     </table>
   );
@@ -43,7 +33,7 @@ const GuessRow: FC<{guess: iGuess}> = ({guess}) => (
     {guess.word.map((L) => {
       return (
         <td key={uuid()}>
-          <div className="h-16 w-16 mr-2">
+          <div className="h-16 w-16 mr-2 mt-2">
             <p
               className={classNames(
                 "h-full p-6 text-xl font-bold border border-white",
@@ -99,26 +89,5 @@ const BlankRows: FC<{nRows: number}> = ({nRows}) => (
       ))}
   </>
 );
-
-const guess = (
-  currentGuess: string[],
-  guesses: iGuess[],
-  setGuesses: Dispatch<SetStateAction<iGuess[]>>,
-  answer: string
-) => {
-  const word = currentGuess.join("").toLowerCase();
-  console.log("current guess: ", currentGuess);
-  const newGuess = currentGuess.map((L) => {
-    return {
-      letter: L,
-      inWord: answer.includes(L),
-      inPosition: false,
-    };
-  });
-  console.log(newGuess);
-  setGuesses([...guesses, {word: newGuess}]);
-  console.log(word, answer);
-  if (word === answer) console.log("YOU WIN!");
-};
 
 export default GuessTable;

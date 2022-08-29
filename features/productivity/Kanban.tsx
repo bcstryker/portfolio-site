@@ -1,7 +1,7 @@
 import {FC, useEffect} from "react";
 import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
-import {KanbanCard, KanbanCols, SetFunction} from "types";
-import {PlusIcon} from "@heroicons/react/solid";
+import {KanbanCols, SetFunction} from "types";
+import {PlusIcon, XIcon} from "@heroicons/react/solid"; //use x icon for delete card function
 import {v4 as uuid} from "uuid";
 import {useAppDispatch, AppDispatch} from "store";
 import {UserActions, UserSelectors} from "store/user";
@@ -10,9 +10,9 @@ import {useSelector} from "react-redux";
 const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) => {
   const dispatch = useAppDispatch();
   const kanbanCols = useSelector(UserSelectors.selectKanban);
-  useEffect(() => {
-    console.log(kanbanCols);
-  }, [kanbanCols]);
+  // useEffect(() => {
+  //   console.log(kanbanCols);
+  // }, [kanbanCols]);
   return (
     <div className="w-full flex justify-evenly rounded-xl border">
       <DragDropContext onDragEnd={(result) => onDragEnd(result, cols, setCols, dispatch)}>

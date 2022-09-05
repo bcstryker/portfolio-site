@@ -1,5 +1,5 @@
 {
-  "name": "playing",
+  "name": "portfolio-site",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:css": "tailwind build styles/tailwind.css -o styles/custom.css"
+    "build:css": "tailwindcss -i styles/tailwind.css -o styles/custom.css"
   },
   "dependencies": {
     "@headlessui/react": "^1.6.5",

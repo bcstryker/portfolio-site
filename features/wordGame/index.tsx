@@ -4,6 +4,17 @@ import GuessTable from "./GuessTable";
 import {allWords} from "features/wordGame/fiveLetterWords";
 import {v4 as uuid} from "uuid";
 import {iGuess} from "types";
+import Keyboard from "./Keyboard";
+
+// todo
+// - add Game Over modal with you won or you lost, guesses/6, game reset
+// - add keyboard with submit or guess button.
+//    already guessed letters should have background to background color in guess row
+// - fix text background color for duplicate letters. example below
+//    answer is PLEAT, you guess TREAT,
+//    first t should not have yellow background
+//    because second t is already in correct place
+//    and there is only one t in the word
 
 const WordGame: FC<{answer: string}> = ({answer}) => {
   const [currentGuess, setCurrentGuess] = useState<string[]>([]);
@@ -11,15 +22,6 @@ const WordGame: FC<{answer: string}> = ({answer}) => {
   const [pressedKey, setPressedKey] = useState("");
   const [gameOver, setGameOver] = useState(false);
   const [shit, setShit] = useState("");
-  // todo
-  // - add Game Over modal with you won or you lost, guesses/6, game reset
-  // - add keyboard with submit or guess button.
-  //    already guessed letters should have background to background color in guess row
-  // - fix text background color for duplicate letters. example below
-  //    answer is PLEAT, you guess TREAT,
-  //    first t should not have yellow background
-  //    because second t is already in correct place
-  //    and there is only one t in the word
 
   const handleUserKeyPress = useCallback((e: KeyboardEvent) => {
     setPressedKey(e.key);
@@ -44,7 +46,7 @@ const WordGame: FC<{answer: string}> = ({answer}) => {
   return (
     <div>
       <GuessTable currentGuess={currentGuess} guesses={guesses} gameOver={gameOver} />
-      {/* <Keyboard /> */}
+      <Keyboard className="mt-10" setPressedKey={setPressedKey} setShit={setShit} />
     </div>
   );
 };

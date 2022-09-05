@@ -27,7 +27,7 @@ const Layout: FC<Props> = ({Component, pageProps}) => {
   return (
     <Provider store={store}>
       <LeftNavbar />
-      <main style={{paddingLeft: "16rem"}}>
+      <main className="sm:pl-64">
         <div className="px-4 py-2 sm:px-10 sm:py-10 text-foreground">
           <ErrorBoundary>
             <div>

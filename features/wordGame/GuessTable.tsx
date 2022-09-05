@@ -9,22 +9,24 @@ const GuessTable: FC<{
   gameOver: boolean;
 }> = ({currentGuess, guesses, gameOver}) => {
   return (
-    <table className="table-auto">
-      <tbody>
-        {guesses.map((w) => {
-          let guessString = "";
-          w.word.forEach((L) => (guessString += L.letter));
-          return <GuessRow key={uuid()} guess={w} />;
-        })}
-        {!gameOver && (
-          <>
-            <InputRow currentGuess={currentGuess} />
-            <BlankRows nRows={5 - guesses.length} />
-          </>
-        )}
-        {/* {gameOver && <GameOverModal />} */}
-      </tbody>
-    </table>
+    <div className="flex justify-center">
+      <table className="table-auto">
+        <tbody>
+          {guesses.map((w) => {
+            let guessString = "";
+            w.word.forEach((L) => (guessString += L.letter));
+            return <GuessRow key={uuid()} guess={w} />;
+          })}
+          {!gameOver && (
+            <>
+              <InputRow currentGuess={currentGuess} />
+              <BlankRows nRows={5 - guesses.length} />
+            </>
+          )}
+          {/* {gameOver && <GameOverModal />} */}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
@@ -36,7 +38,7 @@ const GuessRow: FC<{guess: iGuess}> = ({guess}) => (
           <div className="h-16 w-16 mr-2 mt-2">
             <p
               className={classNames(
-                "h-full p-6 text-xl font-bold border border-white",
+                "h-full p-6 text-xl flex justify-center font-bold border border-white",
                 L.inWord ? (L.inPosition ? "bg-accent-green" : "bg-accent-yellow") : "bg-foreground-alt-400"
               )}
             >

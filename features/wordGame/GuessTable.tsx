@@ -35,7 +35,7 @@ const GuessRow: FC<{guess: iGuess}> = ({guess}) => (
     {guess.word.map((L) => {
       return (
         <td key={uuid()}>
-          <div className="h-16 w-16 mr-2 mt-2">
+          <div className="h-16 w-16 mr-1 mt-1">
             <p
               className={classNames(
                 "h-full p-6 text-xl flex justify-center font-bold border border-white",
@@ -55,7 +55,7 @@ const InputRow: FC<{currentGuess: string[]}> = ({currentGuess}) => (
   <tr>
     {currentGuess.map((g) => (
       <td key={uuid()}>
-        <div className="h-16 w-16 mt-2">
+        <div className="h-16 w-16 mt-1">
           <p className={classNames("h-full p-6 text-xl font-bold border border-white bg-foreground-alt-400")}>{g}</p>
         </div>
       </td>
@@ -82,7 +82,7 @@ const BlankRows: FC<{nRows: number}> = ({nRows}) => (
             .fill(" ")
             .map((_) => (
               <td key={uuid()}>
-                <div className="h-16 w-16 mt-2">
+                <div className="h-16 w-16 mt-1">
                   <p className={classNames("h-full p-6 border border-foreground-alt-200 bg-foreground-alt-400")}>{_}</p>
                 </div>
               </td>

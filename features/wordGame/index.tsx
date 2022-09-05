@@ -5,11 +5,15 @@ import {allWords} from "features/wordGame/fiveLetterWords";
 import {v4 as uuid} from "uuid";
 import {iGuess} from "types";
 import Keyboard from "./Keyboard";
+import {AppDispatch, useAppDispatch} from "store";
+import {ThemeActions} from "store/theme";
+import Confetti from "components/Confetti";
+import Modal from "components/Modal";
+import Button from "components/Button";
+import {useRouter} from "next/router";
 
 // todo
 // - add Game Over modal with you won or you lost, guesses/6, game reset
-// - add keyboard with submit or guess button.
-//    already guessed letters should have background to background color in guess row
 // - fix text background color for duplicate letters. example below
 //    answer is PLEAT, you guess TREAT,
 //    first t should not have yellow background
@@ -17,11 +21,17 @@ import Keyboard from "./Keyboard";
 //    and there is only one t in the word
 
 const WordGame: FC<{answer: string}> = ({answer}) => {
+  console.log(answer);
   const [currentGuess, setCurrentGuess] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<iGuess[]>([]);
   const [pressedKey, setPressedKey] = useState("");
-  const [gameOver, setGameOver] = useState(false);
   const [shit, setShit] = useState("");
+
+  const dispatch = useAppDispatch();
+  const [isOpen, setIsOpen] = useState(false);
+  const closeModal = () => setIsOpen(false);
+  const [gameOver, setGameOver] = useState(false);
+  const router = useRouter();
 
   const handleUserKeyPress = useCallback((e: KeyboardEvent) => {
     setPressedKey(e.key);
@@ -38,12 +48,23 @@ const WordGame: FC<{answer: string}> = ({answer}) => {
     }
     if (pressedKey.toLowerCase() == "backspace") setCurrentGuess((c) => c.slice(0, -1));
     if (pressedKey.toLowerCase() == "enter") {
-      guess(currentGuess, setCurrentGuess, guesses, setGuesses, answer, setGameOver);
+      guess(currentGuess, setCurrentGuess, guesses, setGuesses, answer, setGameOver, dispatch, setIsOpen);
     }
   }, [shit]);
 
   return (
     <div>
+      <Confetti />
+      <Modal isOpen={isOpen} closeModal={closeModal} title="Game Over">
+        <p className="text-xl text-primary">You Win!</p>
+        <Button
+          onClick={() => {
+            router.reload();
+          }}
+        >
+          Play Again
+        </Button>
+      </Modal>
       <GuessTable currentGuess={currentGuess} guesses={guesses} gameOver={gameOver} />
       <Keyboard className="mt-10" setPressedKey={setPressedKey} setShit={setShit} guesses={guesses} />
     </div>
@@ -56,7 +77,9 @@ const guess = (
   guesses: iGuess[],
   setGuesses: Dispatch<SetStateAction<iGuess[]>>,
   answer: string,
-  setGameOver: Dispatch<SetStateAction<boolean>>
+  setGameOver: Dispatch<SetStateAction<boolean>>,
+  dispatch: AppDispatch,
+  setIsOpen: Dispatch<SetStateAction<boolean>>
 ) => {
   const word = currentGuess.join("").toLowerCase();
   if (!allWords.includes(word)) {
@@ -73,7 +96,10 @@ const guess = (
   });
   setGuesses([...guesses, {word: newGuess}]);
   setCurrentGuess([]);
-  if (word === answer) console.log("YOU WIN!");
+  if (word === answer) {
+    dispatch(ThemeActions.setIsConfettiOn(true));
+    setIsOpen(true);
+  }
   if (guesses.length === 5) setGameOver(true);
 };
 

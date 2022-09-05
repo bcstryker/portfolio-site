@@ -17,11 +17,13 @@ export interface CurrentTheme {
 export interface ThemeState {
   type: ThemeType;
   current: CurrentTheme;
+  isConfettiOn: boolean;
 }
 
 const initialState: ThemeState = {
   type: ThemeType.Dark,
   current: {label: "Dark", value: "dark"},
+  isConfettiOn: false,
 };
 
 const themeSlice = createSlice({
@@ -34,16 +36,20 @@ const themeSlice = createSlice({
     setCurrentTheme: (state, action: PayloadAction<CurrentTheme>) => {
       state.current = action.payload;
     },
+    setIsConfettiOn: (state, action: PayloadAction<boolean>) => {
+      state.isConfettiOn = action.payload;
+    },
   },
 });
 
 /**
  * Actions
  */
-export const {setThemeType, setCurrentTheme} = themeSlice.actions;
+export const {setThemeType, setCurrentTheme, setIsConfettiOn} = themeSlice.actions;
 export const ThemeActions = {
   setThemeType,
   setCurrentTheme,
+  setIsConfettiOn,
 };
 
 /**
@@ -51,6 +57,7 @@ export const ThemeActions = {
  */
 const selectTheme = (state: RootState) => state.theme;
 const selectThemeTone = (state: RootState) => currentTheme(state.theme).tone;
+const selectIsConfettiOn = (state: RootState) => state.theme.isConfettiOn;
 
 /**
  * Listeners
@@ -68,6 +75,7 @@ startAppListening({
 export const ThemeSelectors = {
   selectTheme,
   selectThemeTone,
+  selectIsConfettiOn,
 };
 
 export default themeSlice.reducer;

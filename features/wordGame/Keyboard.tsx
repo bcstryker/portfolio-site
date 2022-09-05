@@ -63,7 +63,7 @@ const KeyboardChar: FC<{
       : "bg-foreground-alt-300";
   return (
     <p
-      className={classNames("hover:cursor-pointer border border-white rounded-md py-4 px-2 mr-1", bgColor)}
+      className={classNames("w-8 text-center hover:cursor-pointer border border-white rounded-md py-3 mr-1", bgColor)}
       onClick={() => {
         setPressedKey(c);
         setShit(uuid());

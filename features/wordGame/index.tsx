@@ -35,7 +35,6 @@ const WordGame: FC<{answer: string}> = ({answer}) => {
     if (/[A-Za-z]/.test(pressedKey) && pressedKey.length == 1) {
       const letter = pressedKey.toUpperCase();
       if (currentGuess.length < 5) setCurrentGuess((prevGuess) => [...prevGuess, letter]);
-      console.log(currentGuess);
     }
     if (pressedKey.toLowerCase() == "backspace") setCurrentGuess((c) => c.slice(0, -1));
     if (pressedKey.toLowerCase() == "enter") {
@@ -46,7 +45,7 @@ const WordGame: FC<{answer: string}> = ({answer}) => {
   return (
     <div>
       <GuessTable currentGuess={currentGuess} guesses={guesses} gameOver={gameOver} />
-      <Keyboard className="mt-10" setPressedKey={setPressedKey} setShit={setShit} />
+      <Keyboard className="mt-10" setPressedKey={setPressedKey} setShit={setShit} guesses={guesses} />
     </div>
   );
 };

@@ -18,7 +18,7 @@ const Keyboard: FC<props> = ({className, setPressedKey, setShit, guesses}) => {
       </div>
       <div className="w-full flex justify-center mt-1">
         <p
-          className="hover:cursor-pointer bg-foreground-alt-300 border border-white rounded-md py-4 px-2 mr-1"
+          className="hover:cursor-pointer bg-foreground-alt-300 border border-white rounded-md py-3 px-1 mr-1"
           onClick={() => {
             setPressedKey("enter");
             setShit(uuid());
@@ -30,7 +30,7 @@ const Keyboard: FC<props> = ({className, setPressedKey, setShit, guesses}) => {
           <KeyboardChar key={c} c={c} setPressedKey={setPressedKey} setShit={setShit} guesses={guesses} />
         ))}
         <p
-          className="hover:cursor-pointer bg-foreground-alt-300 border border-white rounded-md py-4 px-2"
+          className="hover:cursor-pointer bg-foreground-alt-300 border border-white rounded-md py-3 px-1"
           onClick={() => {
             setPressedKey("backspace");
             setShit(uuid());

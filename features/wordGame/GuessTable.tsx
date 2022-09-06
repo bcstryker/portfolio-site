@@ -51,11 +51,11 @@ const GuessRow: FC<{guess: iGuess}> = ({guess}) => (
   </tr>
 );
 
-const InputRow: FC<{currentGuess: string[]}> = ({currentGuess}) => (
+const InputRow: FC<{currentGuess: string[]; animateRow: string}> = ({currentGuess, animateRow}) => (
   <tr>
     {currentGuess.map((g) => (
       <td key={uuid()}>
-        <div className="h-16 w-16 mt-1">
+        <div className={classNames("h-16 w-16 mt-1", animateRow)}>
           <p className={classNames("h-full p-6 text-xl font-bold border border-white bg-foreground-alt-400")}>{g}</p>
         </div>
       </td>
@@ -64,7 +64,7 @@ const InputRow: FC<{currentGuess: string[]}> = ({currentGuess}) => (
       .fill(" ")
       .map((_) => (
         <td key={uuid()}>
-          <div className="h-16 w-16 mt-2">
+          <div className="h-16 w-16 mt-1">
             <p className={classNames("h-full p-6 border border-foreground-alt-200 bg-foreground-alt-400")}>{_}</p>
           </div>
         </td>

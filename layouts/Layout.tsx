@@ -7,7 +7,8 @@ import {Provider} from "react-redux";
 import {store} from "../store";
 import ErrorBoundary from "components/ErrorBoundary";
 
-// import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css";
+import MyToastContainer from "components/ToastContainer";
 
 // Custom polyfills
 // import "core-js/proposals/string-match-all";
@@ -36,6 +37,7 @@ const Layout: FC<Props> = ({Component, pageProps}) => {
             </div>
           </ErrorBoundary>
         </div>
+        <MyToastContainer />
       </main>
     </Provider>
   );

@@ -88,9 +88,17 @@ const guess = (
     const nInGuess = guessString.split(l).length - 1;
     const nInAnswer = answer.split(l).length - 1;
     const otherIsBest =
-      answer[i] !== l &&
-      ((guessString.slice(0, i).includes(l) && answer[getPosition(guessString, l, 1)] == l) ||
-        (guessString.slice(i).includes(l) && answer[getPosition(guessString, l, 2)] == l));
+      answer[i] !== l
+        ? nInGuess > 1
+          ? (guessString.slice(0, i).includes(l) && answer[getPosition(guessString, l, 1)] == l) ||
+            (guessString.slice(i + 1).includes(l) && answer[getPosition(guessString, l, 2)] == l) ||
+            (guessString.slice(i + 1).includes(l) && answer[getPosition(guessString, l, 3)] == l)
+            ? true
+            : guessString.slice(0, i).includes(l)
+            ? true
+            : false
+          : false
+        : false;
     const inWord =
       nInAnswer == 0
         ? false

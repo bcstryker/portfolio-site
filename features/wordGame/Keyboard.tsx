@@ -51,7 +51,16 @@ const KeyboardChar: FC<{
 }> = ({c, guesses, setPressedKey, setShit}) => {
   let guessedLetter: iLetter | null = null;
   for (let i = 0; i < guesses.length; i++)
-    for (let j = 0; j < 5; j++) if (guesses[i].word[j].letter.toLowerCase() === c) guessedLetter = guesses[i].word[j];
+    for (let j = 0; j < 5; j++)
+      if (guesses[i].word[j].letter.toLowerCase() === c)
+        guessedLetter =
+          guessedLetter !== null && guessedLetter.inPosition
+            ? guessedLetter
+            : guesses[i].word[j].inPosition
+            ? guesses[i].word[j]
+            : guessedLetter !== null && guessedLetter.inWord
+            ? guessedLetter
+            : guesses[i].word[j];
 
   const bgColor =
     guessedLetter !== null

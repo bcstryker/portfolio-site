@@ -1,5 +1,4 @@
 import {Dispatch, FC, SetStateAction, useCallback, useEffect, useState} from "react";
-// import Keyboard from "./Keyboard";
 import GuessTable from "./GuessTable";
 import {allWords} from "features/wordGame/fiveLetterWords";
 import {v4 as uuid} from "uuid";
@@ -12,14 +11,6 @@ import Modal from "components/Modal";
 import Button from "components/Button";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
-
-// todo
-// - add Game Over modal with you won or you lost, guesses/6, game reset
-// - fix text background color for duplicate letters. example below
-//    answer is PLEAT, you guess TREAT,
-//    first t should not have yellow background
-//    because second t is already in correct place
-//    and there is only one t in the word
 
 const WordGame: FC<{answer: string}> = ({answer}) => {
   console.log(answer);
@@ -92,10 +83,29 @@ const guess = (
   }
 
   const newGuess = currentGuess.map((L, i) => {
+    const guessString = currentGuess.join("").toLowerCase();
+    const l: string = L.toLowerCase();
+    const nInGuess = guessString.split(l).length - 1;
+    const nInAnswer = answer.split(l).length - 1;
+    const otherIsBest =
+      answer[i] !== l &&
+      ((guessString.slice(0, i).includes(l) && answer[getPosition(guessString, l, 1)] == l) ||
+        (guessString.slice(i).includes(l) && answer[getPosition(guessString, l, 2)] == l));
+    const inWord =
+      nInAnswer == 0
+        ? false
+        : nInAnswer == 1
+        ? otherIsBest
+          ? false
+          : true
+        : nInAnswer == 2 && nInGuess == 2
+        ? true
+        : false;
+    const inPosition = answer[i] === l;
     return {
       letter: L,
-      inWord: answer.includes(L.toLowerCase()),
-      inPosition: answer[i] === L.toLowerCase(),
+      inWord: inWord,
+      inPosition: inPosition,
     };
   });
   setGuesses([...guesses, {word: newGuess}]);
@@ -110,6 +120,10 @@ const guess = (
     setModalText("You Loose :(");
     setIsOpen(true);
   }
+};
+
+const getPosition = (s: string, subString: string, index: number) => {
+  return s.split(subString, index).join(subString).length;
 };
 
 export default WordGame;

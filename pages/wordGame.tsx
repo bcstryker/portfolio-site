@@ -4,6 +4,7 @@ import {StrykerPage} from "../types";
 import {words} from "features/wordGame/fiveLetterWords";
 
 const answer = words[Math.floor(Math.random() * words.length)];
+// const answer = "treat";
 
 const Home: StrykerPage = () => {
   return (

@@ -3,7 +3,6 @@ import Kanban from "../features/productivity/Kanban";
 import {KanbanCols, StrykerPage} from "../types";
 import {useSelector} from "react-redux";
 import {RootState} from "store";
-// import {v4 as uuid} from "uuid";
 
 const Home: StrykerPage = () => {
   const {kanbanCols} = useSelector((state: RootState) => state.user);

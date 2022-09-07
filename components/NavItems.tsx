@@ -26,7 +26,7 @@ const NavItems: FC<Props> = ({onClick}) => {
     },
     {name: "People", href: "/b", icon: UserGroupIcon},
     {name: "Star", href: "/c", icon: StarIcon},
-    {name: "Heart", href: "/d", icon: HeartIcon},
+    {name: "Word Game", href: "/wordGame", icon: HeartIcon},
     {name: "Stats", href: "/e", icon: ChartBarIcon},
   ];
 

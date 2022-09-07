@@ -2,8 +2,9 @@ import {FC, Fragment, ReactElement, ReactNode} from "react";
 import {Dialog, Transition} from "@headlessui/react";
 import {XIcon} from "@heroicons/react/solid";
 
-// import {ThemeSelectors} from "../store/theme";
 import {classNames} from "../utils";
+import {useAppSelector} from "store";
+import {ThemeSelectors} from "store/theme";
 
 interface Props {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface Props {
 }
 
 const Modal: FC<Props> = ({isOpen, closeModal, title, children, footer, size = "normal"}) => {
-  // const isConfettiOn = useAppSelector(ThemeSelectors.selectIsConfettiOn);
+  const isConfettiOn = useAppSelector(ThemeSelectors.selectIsConfettiOn);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -32,9 +33,9 @@ const Modal: FC<Props> = ({isOpen, closeModal, title, children, footer, size = "
           >
             <Dialog.Overlay
               className={classNames(
-                "fixed inset-0 z-210 transition-all bg-background-light bg-opacity-50"
+                "fixed inset-0 z-210 transition-all bg-background-light bg-opacity-50",
                 // Impossible to render smoothly over a blurred background.
-                // !isConfettiOn && "backdrop-filter backdrop-blur-sm"
+                !isConfettiOn && "backdrop-filter backdrop-blur-sm"
               )}
             />
           </Transition.Child>

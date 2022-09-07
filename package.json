@@ -1,12 +1,13 @@
 {
-  "name": "playing",
+  "name": "portfolio-site",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:css": "tailwindcss -i styles/tailwind.css -o styles/custom.css"
   },
   "dependencies": {
     "@headlessui/react": "^1.6.5",
@@ -20,10 +21,13 @@
     "next": "12.1.6",
     "react": "18.2.0",
     "react-beautiful-dnd": "^13.1.0",
+    "react-confetti": "^6.1.0",
     "react-dnd": "^16.0.1",
     "react-dom": "18.2.0",
     "react-redux": "^8.0.2",
     "react-select": "^5.3.2",
+    "react-toastify": "^9.0.8",
+    "rooks": "^7.0.0",
     "styled-components": "^5.3.5",
     "uuid": "^8.3.2"
   },

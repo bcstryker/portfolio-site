@@ -7,8 +7,10 @@ const withOpacityValue = (variable) => {
 
 module.exports = {
   content: [
+    "./layouts/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
+    "./features/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
     fontFamily: {
@@ -43,6 +45,8 @@ module.exports = {
         accent: {
           DEFAULT: withOpacityValue("--color-accent"),
           light: withOpacityValue("--color-accent-light"),
+          yellow: withOpacityValue("--color-accent-yellow"),
+          green: withOpacityValue("--color-accent-green"),
         },
         background: {
           DEFAULT: withOpacityValue("--color-background"),

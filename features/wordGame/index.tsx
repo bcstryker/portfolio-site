@@ -13,7 +13,7 @@ import {useRouter} from "next/router";
 import {toast} from "react-toastify";
 
 const WordGame: FC<{answer: string}> = ({answer}) => {
-  console.log(answer);
+  // console.log(answer);
   const [currentGuess, setCurrentGuess] = useState<string[]>([]);
   const [guesses, setGuesses] = useState<iGuess[]>([]);
   const [pressedKey, setPressedKey] = useState("");
@@ -77,7 +77,6 @@ const guess = (
 ) => {
   const word = currentGuess.join("").toLowerCase();
   if (!allWords.includes(word)) {
-    console.log("That's not a word");
     toast.error("Not in word list");
     return;
   }
@@ -106,8 +105,10 @@ const guess = (
         ? otherIsBest
           ? false
           : true
-        : nInAnswer == 2 && nInGuess == 2
-        ? true
+        : nInAnswer == 2
+        ? nInGuess <= 2
+          ? true
+          : false
         : false;
     const inPosition = answer[i] === l;
     return {

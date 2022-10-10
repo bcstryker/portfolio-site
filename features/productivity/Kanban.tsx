@@ -1,23 +1,20 @@
-import {FC, useEffect} from "react";
+import {FC} from "react";
 import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
 import {KanbanCols, SetFunction} from "types";
 import {PlusIcon, XIcon} from "@heroicons/react/solid"; //use x icon for delete card function
 import {v4 as uuid} from "uuid";
 import {useAppDispatch, AppDispatch} from "store";
-import {UserActions, UserSelectors} from "store/user";
-import {useSelector} from "react-redux";
+import {UserActions} from "store/user";
+// import {useSelector} from "react-redux";
 
 const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) => {
   const dispatch = useAppDispatch();
-  const kanbanCols = useSelector(UserSelectors.selectKanban);
-  // useEffect(() => {
-  //   console.log(kanbanCols);
-  // }, [kanbanCols]);
+
   return (
     <div className="w-full flex justify-evenly rounded-xl border">
       <DragDropContext onDragEnd={(result) => onDragEnd(result, cols, setCols, dispatch)}>
         {Object.entries(cols).map(([colId, col]) => (
-          <div key={col.name} className="w-full px-4 py-8">
+          <div key={col.name} className="w-1/4 px-4 py-8">
             <div className="flex justify-between">
               <h2>{col.name}</h2>
               <PlusIcon className="h-4 w-4 cursor-pointer" onClick={() => addCard(cols, setCols, colId, dispatch)} />
@@ -62,17 +59,10 @@ const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
                                 contentEditable="true"
                                 onChange={() => editCard(colId, item.id, cols, setCols, dispatch)}
                                 onBlur={() => editCard(colId, item.id, cols, setCols, dispatch)}
-                                className="cursor-text focus:outline-none whitespace-pre"
+                                className="cursor-text focus:outline-none whitespace-pre-wrap"
                               >
                                 {item.content}
                               </p>
-                              {/* <input
-                                id={item.id}
-                                className={`w-full bg-foreground-alt-400 rounded-xl break-normal text-foreground-alt-200 focus:outline-none`}
-                                placeholder={item.content}
-                                // onKeyUp={(event) => editCard(event, colId, item.id, cols, setCols)}
-                                onSubmit={(text) => editCard(text, colId, item.id, cols, setCols)}
-                              /> */}
                             </div>
                           )}
                         </Draggable>

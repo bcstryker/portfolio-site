@@ -1,0 +1,12 @@
+{
+  "home": {
+    "devNotes": "\tBy the way, I made this website using TS, React, and Next. It is hosted with vercel and you can check out the public repo at the link below.",
+    "title": "",
+    "welcome": "Welcome!",
+    "welcomeMessage": "Hello Friend, \n\n\tMy name is Brandon and this is my developer portfolio site. I do not know how you ended up here but please be aware, this site is under development. The word game is fun, but not much else here works yet. Maybe play some not-wordle and check back some other time."
+  },
+  "meta": {
+    "description": "This is a website built to showcase the skillset of Brandon Stryker, a software engineer with 5+ years experience working with Python, R, JS, TS, React, Next, and a slew of other technologies along the way.",
+    "titleFull": "Brandon Stryker Developer Showcase"
+  }
+}

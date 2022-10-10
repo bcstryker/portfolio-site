@@ -1,20 +1,30 @@
 import {FC} from "react";
+import {useTranslation} from "react-i18next";
 import {StrykerPage} from "../types";
 
 const Home: StrykerPage = () => {
+  const {t} = useTranslation("translation");
   return (
     <>
       <div className="w-full flex justify-center mb-16 mt-48">
-        <h1 className="text-xl text-foreground-alt-100">Welcome!</h1>
+        <h1 className="text-xl text-foreground-alt-100">{t("home.welcome")}</h1>
       </div>
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center mt-16">
         <div className="w-2/3">
           <h3 className="text-xl text-foreground-alt-100 whitespace-pre-wrap text-justify">
-            {
-              "Hello Friend, \n\n\tMy name is Brandon and this is my site. I do not know how you ended up here but please be aware, this site is under development. The word game is fun, but not much else here works yet. Maybe play some not wordle and check back some other time."
-            }
+            {t("home.welcomeMessage")}
           </h3>
         </div>
+      </div>
+      <div className="w-full flex justify-center mt-16">
+        <div className="w-2/3">
+          <h4 className="text-xl text-foreground-alt-100 whitespace-pre-wrap text-justify">{t("home.devNotes")}</h4>
+        </div>
+      </div>
+      <div className="w-full flex justify-center mt-16">
+        <a href="https://github.com/bcstryker/portfolio-site.git">
+          <p className="text-accent hover:text-accent-light hover:underline">{"Portfolio Site GitHub Repo"}</p>
+        </a>
       </div>
     </>
   );

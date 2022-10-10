@@ -19,5 +19,5 @@ module.exports = {
       useSuspense: false,
     },
   },
-  use: process.env.NODE_ENV === "development" ? [HttpBackend] : [],
+  use: [HttpBackend],
 };

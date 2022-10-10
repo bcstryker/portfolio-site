@@ -1,9 +1,9 @@
-import {FC} from "react";
-import {useTranslation} from "react-i18next";
-import {StrykerPage} from "../types";
+import { FC } from "react";
+import { useTranslation } from "react-i18next";
+import { StrykerPage } from "../types";
 
 const Home: StrykerPage = () => {
-  const {t} = useTranslation("translation");
+  const { t } = useTranslation("translation");
   return (
     <>
       <div className="w-full flex justify-center mb-16 mt-48">
@@ -18,12 +18,16 @@ const Home: StrykerPage = () => {
       </div>
       <div className="w-full flex justify-center mt-16">
         <div className="w-2/3">
-          <h4 className="text-xl text-foreground-alt-100 whitespace-pre-wrap text-justify">{t("home.devNotes")}</h4>
+          <h4 className="text-xl text-foreground-alt-100 whitespace-pre-wrap text-justify">
+            {t("home.devNotes")}
+          </h4>
         </div>
       </div>
       <div className="w-full flex justify-center mt-16">
         <a href="https://github.com/bcstryker/portfolio-site.git">
-          <p className="text-accent hover:text-accent-light hover:underline">{"Portfolio Site GitHub Repo"}</p>
+          <p className="text-accent hover:text-accent-light hover:underline">
+            {t("home.repoLinkText")}
+          </p>
         </a>
       </div>
     </>
@@ -31,11 +35,14 @@ const Home: StrykerPage = () => {
 };
 
 const PageTitle: FC = () => {
+  const { t } = useTranslation("translation");
   return (
     <>
-      <h1 className="font-title font-medium text-foreground-alt-100 text-2xl sm:text-3xl pt-2">{"Home Page"}</h1>
+      <h1 className="font-title font-medium text-foreground-alt-100 text-2xl sm:text-3xl pt-2">
+        {"home.title"}
+      </h1>
       <h2 className="font-body font-normal text-foreground-alt-100 text-sm sm:text-base leading-4 sm:leading-6 mt-1">
-        {"Welcome to this website!"}
+        {t("home.banner")}
       </h2>
     </>
   );

@@ -1,10 +1,20 @@
 import { FC } from "react";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { KanbanCols, SetFunction } from "types";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DroppableStateSnapshot,
+  DraggableProvided,
+  DroppableProvided,
+  DraggableStateSnapshot,
+} from "react-beautiful-dnd";
+import { KanbanCard, KanbanCols, SetFunction } from "types";
 import { PlusIcon, XIcon } from "@heroicons/react/solid"; //use x icon for delete card function
 import { v4 as uuid } from "uuid";
 import { useAppDispatch, AppDispatch } from "store";
 import { UserActions } from "store/user";
+import { classNames } from "utils";
 // import {useSelector} from "react-redux";
 
 const Kanban: FC<{ cols: KanbanCols; setCols: SetFunction }> = ({ cols, setCols }) => {
@@ -24,55 +34,30 @@ const Kanban: FC<{ cols: KanbanCols; setCols: SetFunction }> = ({ cols, setCols 
             </div>
             <Droppable key={colId} droppableId={colId}>
               {(provided, snapshot) => (
-                <div
-                  className="rounded-xl border border-foreground-alt-300 bg-background-light p-6"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{
-                    backgroundColor: snapshot.isDraggingOver
-                      ? "rgb(var(--color-foreground-alt-400))"
-                      : "rgb(var(--color-background-light))",
-                  }}
-                >
-                  {col.items.map(
-                    (item, index) =>
-                      item &&
-                      item.id && (
-                        <Draggable key={item.id} draggableId={item.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              className="rounded-xl"
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={{
-                                userSelect: "none",
-                                padding: 16,
-                                margin: "0 0 8px 0",
-                                minHeight: "50px",
-                                backgroundColor: snapshot.isDragging
-                                  ? "rgb(var(--color-foreground-alt-300))"
-                                  : "rgb(var(--color-foreground-alt-400))",
-                                color: "rgb(var(--color-foreground-alt-100))",
-                                ...provided.draggableProps.style,
-                              }}
-                            >
-                              <p
-                                id={item.id}
-                                contentEditable="true"
-                                onChange={() => editCard(colId, item.id, cols, setCols, dispatch)}
-                                onBlur={() => editCard(colId, item.id, cols, setCols, dispatch)}
-                                className="cursor-text focus:outline-none whitespace-pre-wrap"
-                              >
-                                {item.content}
-                              </p>
-                            </div>
-                          )}
-                        </Draggable>
-                      ),
-                  )}
-                  {provided.placeholder}
-                </div>
+                <DroppableDiv provided={provided} snapshot={snapshot}>
+                  <>
+                    {col.items.map(
+                      (item, index) =>
+                        item &&
+                        item.id && (
+                          <Draggable key={item.id} draggableId={item.id} index={index}>
+                            {(provided, snapshot) => (
+                              <DraggableDiv provided={provided} snapshot={snapshot}>
+                                <Card
+                                  item={item}
+                                  colId={colId}
+                                  cols={cols}
+                                  setCols={setCols}
+                                  dispatch={dispatch}
+                                />
+                              </DraggableDiv>
+                            )}
+                          </Draggable>
+                        ),
+                    )}
+                    {provided.placeholder}
+                  </>
+                </DroppableDiv>
               )}
             </Droppable>
           </div>
@@ -88,7 +73,6 @@ const onDragEnd = (
   setCols: SetFunction,
   dispatch: AppDispatch,
 ) => {
-  console.log(result);
   if (!result.destination) return;
   const { source, destination } = result;
   if (source.droppableId !== destination.droppableId) {
@@ -98,7 +82,6 @@ const onDragEnd = (
     const destItems = [...destCol.items];
     const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
-    console.log(destItems);
     setCols((old: KanbanCols) => {
       return {
         ...old,
@@ -168,5 +151,67 @@ const editCard = (
     },
   });
 };
+
+const DroppableDiv: FC<{
+  provided: DroppableProvided;
+  snapshot: DroppableStateSnapshot;
+  children: JSX.Element;
+}> = ({ provided, snapshot, children }) => (
+  <div
+    className="rounded-xl border border-foreground-alt-300 bg-background-light p-6"
+    {...provided.droppableProps}
+    ref={provided.innerRef}
+    style={{
+      backgroundColor: snapshot.isDraggingOver
+        ? "rgb(var(--color-foreground-alt-400))"
+        : "rgb(var(--color-background-light))",
+    }}
+  >
+    {children}
+  </div>
+);
+
+const DraggableDiv: FC<{
+  provided: DraggableProvided;
+  snapshot: DraggableStateSnapshot;
+  children: JSX.Element;
+}> = ({ provided, snapshot, children }) => (
+  <div
+    className={classNames(
+      "rounded-xl px-4 pb-4 pt-1 text-foreground-alt-100 mb-3",
+      snapshot.isDragging ? "bg-foreground-alt-300" : "bg-foreground-alt-400",
+    )}
+    ref={provided.innerRef}
+    {...provided.draggableProps}
+    {...provided.dragHandleProps}
+    style={{ ...provided.draggableProps.style }}
+  >
+    {children}
+  </div>
+);
+
+const Card: FC<{
+  item: KanbanCard;
+  colId: string;
+  cols: KanbanCols;
+  setCols: SetFunction;
+  dispatch: AppDispatch;
+}> = ({ item, colId, cols, setCols, dispatch }) => (
+  <>
+    <div className="w-full flex justify-end">
+      {/* TODO turn this elipsis into modal with options to edit or delete card */}
+      <p>...</p>
+    </div>
+    <p
+      id={item.id}
+      contentEditable="true"
+      onChange={() => editCard(colId, item.id, cols, setCols, dispatch)}
+      onBlur={() => editCard(colId, item.id, cols, setCols, dispatch)}
+      className="cursor-text focus:outline-none whitespace-pre-wrap"
+    >
+      {item.content}
+    </p>
+  </>
+);
 
 export default Kanban;

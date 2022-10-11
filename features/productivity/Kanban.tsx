@@ -1,13 +1,13 @@
-import {FC} from "react";
-import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
-import {KanbanCols, SetFunction} from "types";
-import {PlusIcon, XIcon} from "@heroicons/react/solid"; //use x icon for delete card function
-import {v4 as uuid} from "uuid";
-import {useAppDispatch, AppDispatch} from "store";
-import {UserActions} from "store/user";
+import { FC } from "react";
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import { KanbanCols, SetFunction } from "types";
+import { PlusIcon, XIcon } from "@heroicons/react/solid"; //use x icon for delete card function
+import { v4 as uuid } from "uuid";
+import { useAppDispatch, AppDispatch } from "store";
+import { UserActions } from "store/user";
 // import {useSelector} from "react-redux";
 
-const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) => {
+const Kanban: FC<{ cols: KanbanCols; setCols: SetFunction }> = ({ cols, setCols }) => {
   const dispatch = useAppDispatch();
 
   return (
@@ -17,7 +17,10 @@ const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
           <div key={col.name} className="w-1/4 px-4 py-8">
             <div className="flex justify-between">
               <h2>{col.name}</h2>
-              <PlusIcon className="h-4 w-4 cursor-pointer" onClick={() => addCard(cols, setCols, colId, dispatch)} />
+              <PlusIcon
+                className="h-4 w-4 cursor-pointer"
+                onClick={() => addCard(cols, setCols, colId, dispatch)}
+              />
             </div>
             <Droppable key={colId} droppableId={colId}>
               {(provided, snapshot) => (
@@ -66,7 +69,7 @@ const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
                             </div>
                           )}
                         </Draggable>
-                      )
+                      ),
                   )}
                   {provided.placeholder}
                 </div>
@@ -79,29 +82,37 @@ const Kanban: FC<{cols: KanbanCols; setCols: SetFunction}> = ({cols, setCols}) =
   );
 };
 
-// this function is done and works well, no further work needed right now
-const onDragEnd = (result: DropResult, cols: KanbanCols, setCols: SetFunction, dispatch: AppDispatch) => {
+const onDragEnd = (
+  result: DropResult,
+  cols: KanbanCols,
+  setCols: SetFunction,
+  dispatch: AppDispatch,
+) => {
+  console.log(result);
   if (!result.destination) return;
-  const {source, destination} = result;
+  const { source, destination } = result;
   if (source.droppableId !== destination.droppableId) {
     const sourceCol = cols[source.droppableId];
     const destCol = cols[destination.droppableId];
     const sourceItems = [...sourceCol.items];
     const destItems = [...destCol.items];
-    const [removed] = sourceItems.splice(destination.index, 1);
+    const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
-    setCols({
-      ...cols,
-      [source.droppableId]: {
-        ...sourceCol,
-        items: sourceItems,
-      },
-      [destination.droppableId]: {
-        ...destCol,
-        items: destItems,
-      },
+    console.log(destItems);
+    setCols((old: KanbanCols) => {
+      return {
+        ...old,
+        [source.droppableId]: {
+          ...sourceCol,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destCol,
+          items: destItems,
+        },
+      };
     });
-    dispatch(UserActions.moveCard({cols: cols, source: source, destination: destination}));
+    dispatch(UserActions.moveCard({ cols: cols, source: source, destination: destination }));
   } else {
     const col = cols[source.droppableId];
     const copiedItems = [...col.items];
@@ -114,14 +125,14 @@ const onDragEnd = (result: DropResult, cols: KanbanCols, setCols: SetFunction, d
         items: copiedItems,
       },
     });
-    // add dispatch call here to support reorganizing cols in user store
+    // TODO add dispatch call to reorganize cols in user store
   }
 };
 
 const addCard = (cols: KanbanCols, setCols: SetFunction, id: string, dispatch: AppDispatch) => {
   const col = cols[id];
   const copiedItems = [...col.items];
-  const newTask = {id: uuid(), content: "New Task."};
+  const newTask = { id: uuid(), content: "New Task." };
   const newCols: KanbanCols = {
     ...cols,
     [id]: {
@@ -130,18 +141,24 @@ const addCard = (cols: KanbanCols, setCols: SetFunction, id: string, dispatch: A
     },
   };
   setCols(newCols);
-  dispatch(UserActions.addCard({colId: id, newCard: newTask}));
+  dispatch(UserActions.addCard({ colId: id, newCard: newTask }));
 };
 
-const editCard = (colId: string, itemId: string, cols: KanbanCols, setCols: SetFunction, dispatch: AppDispatch) => {
+const editCard = (
+  colId: string,
+  itemId: string,
+  cols: KanbanCols,
+  setCols: SetFunction,
+  dispatch: AppDispatch,
+) => {
   const text = document.getElementById(itemId)?.innerText;
   const col = cols[colId];
   const copiedItems = col ? [...col.items] : [];
   for (let n = 0; n < copiedItems.length; n++)
     if (copiedItems[n].id === itemId) {
-      copiedItems[n] = {...copiedItems[n], content: text || ""};
+      copiedItems[n] = { ...copiedItems[n], content: text || "" };
     }
-  dispatch(UserActions.editCard({colId: colId, items: copiedItems}));
+  dispatch(UserActions.editCard({ colId: colId, items: copiedItems }));
 
   setCols({
     ...cols,

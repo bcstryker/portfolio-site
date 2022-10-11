@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -10,7 +10,7 @@ import {
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
 import { KanbanCard, KanbanCols, SetFunction } from "types";
-import { PlusIcon, XIcon } from "@heroicons/react/solid"; //use x icon for delete card function
+import { PlusIcon, TrashIcon, PencilIcon } from "@heroicons/react/solid"; //use x icon for delete card function
 import { v4 as uuid } from "uuid";
 import { useAppDispatch, AppDispatch } from "store";
 import { UserActions } from "store/user";
@@ -196,22 +196,35 @@ const Card: FC<{
   cols: KanbanCols;
   setCols: SetFunction;
   dispatch: AppDispatch;
-}> = ({ item, colId, cols, setCols, dispatch }) => (
-  <>
-    <div className="w-full flex justify-end">
-      {/* TODO turn this elipsis into modal with options to edit or delete card */}
-      <p>...</p>
-    </div>
-    <p
-      id={item.id}
-      contentEditable="true"
-      onChange={() => editCard(colId, item.id, cols, setCols, dispatch)}
-      onBlur={() => editCard(colId, item.id, cols, setCols, dispatch)}
-      className="cursor-text focus:outline-none whitespace-pre-wrap"
-    >
-      {item.content}
-    </p>
-  </>
-);
+}> = ({ item, colId, cols, setCols, dispatch }) => {
+  const [openModal, setOpenModal] = useState(false);
+  return (
+    <>
+      <div className="w-full flex justify-end">
+        {/* TODO turn this elipsis into modal with options to edit or delete card */}
+        <p
+          onClick={() => {
+            setOpenModal(true);
+          }}
+        >
+          ...
+        </p>
+        {openModal && <OptionsModal />}
+      </div>
+      <p
+        id={item.id}
+        contentEditable="true"
+        onChange={() => editCard(colId, item.id, cols, setCols, dispatch)}
+        onBlur={() => editCard(colId, item.id, cols, setCols, dispatch)}
+        className="cursor-text focus:outline-none whitespace-pre-wrap"
+      >
+        {item.content}
+      </p>
+    </>
+  );
+};
+
+// TODO make this modal a real modal that works, should contain edit and delete functionality
+const OptionsModal: FC = () => <div className="z-200 w-16 h-8 bg-background border border-white" />;
 
 export default Kanban;

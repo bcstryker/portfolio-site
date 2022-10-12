@@ -1,5 +1,17 @@
 import { FC, MouseEventHandler } from "react";
+<<<<<<< HEAD
 import { ClockIcon, HeartIcon, LightningBoltIcon, TemplateIcon } from "@heroicons/react/solid";
+=======
+import {
+  ChartBarIcon,
+  ClockIcon,
+  HeartIcon,
+  LightningBoltIcon,
+  StarIcon,
+  TemplateIcon,
+  UserGroupIcon,
+} from "@heroicons/react/solid";
+>>>>>>> b36378d (switched all text to i18n and stubbed clock page)
 
 import NavItem from "./NavItem";
 import { useTranslation } from "react-i18next";
@@ -17,8 +29,13 @@ const NavItems: FC<Props> = ({ onClick }) => {
       href: "/kanban",
       icon: LightningBoltIcon,
     },
+<<<<<<< HEAD
     { name: t("nav.wordGame"), href: "/wordGame", icon: HeartIcon },
     { name: t("nav.clock"), href: "/clock", icon: ClockIcon },
+=======
+    { name: "Word Game", href: "/wordGame", icon: HeartIcon },
+    { name: "Clock", href: "/clock", icon: ClockIcon },
+>>>>>>> b36378d (switched all text to i18n and stubbed clock page)
   ];
 
   return (

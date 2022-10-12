@@ -3,9 +3,8 @@ import Kanban from "../features/Kanban";
 import { KanbanCols, StrykerPage } from "../types";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
-import { useTranslation } from "react-i18next";
 
-const Page: StrykerPage = () => {
+const Home: StrykerPage = () => {
   const { kanbanCols } = useSelector((state: RootState) => state.user);
   const [cols, setCols] = useState<KanbanCols>({} as KanbanCols);
   useEffect(() => setCols(kanbanCols), [kanbanCols]);
@@ -21,19 +20,18 @@ const Page: StrykerPage = () => {
 };
 
 const PageTitle: FC = () => {
-  const { t } = useTranslation("translation");
   return (
     <>
       <h1 className="font-title font-medium text-foreground-alt-100 text-2xl sm:text-3xl pt-2">
-        {t("kanban.title")}
+        {"Kanban Board"}
       </h1>
       <h2 className="font-body font-normal text-foreground-alt-100 text-sm sm:text-base leading-4 sm:leading-6 mt-1">
-        {t("kanban.subtitle")}
+        {"A great tool to increase productivity!"}
       </h2>
     </>
   );
 };
 
-Page.PageTitle = PageTitle;
+Home.PageTitle = PageTitle;
 
-export default Page;
+export default Home;

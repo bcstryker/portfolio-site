@@ -1,4 +1,4 @@
-import {FC} from "react";
+import { FC } from "react";
 
 export interface StrykerPage extends FC {
   PageTitle: FC;
@@ -6,7 +6,7 @@ export interface StrykerPage extends FC {
 
 export type SetFunction = (property: any) => void;
 
-// PRODUCTIVITY
+// KANBAN
 export interface KanbanCard {
   id: string;
   content: string;

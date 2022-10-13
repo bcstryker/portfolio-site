@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { StrykerPage } from "../types";
 
-const Home: StrykerPage = () => {
+const Page: StrykerPage = () => {
   const { t } = useTranslation("translation");
   return (
     <div className="h-full flex">
@@ -43,6 +43,6 @@ const PageTitle: FC = () => {
   );
 };
 
-Home.PageTitle = PageTitle;
+Page.PageTitle = PageTitle;
 
-export default Home;
+export default Page;

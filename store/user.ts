@@ -67,19 +67,11 @@ const userSlice = createSlice({
       const col = state.kanbanCols[colId];
       col.items = items;
     },
-    //   setCols({
-    //   ...cols,
-    //   [colId]: {
-    //     ...col,
-    //     items: copiedItems,
-    //   },
-    // });
   },
 });
 
-const { setKanban, addCard, moveCard, editCard } = userSlice.actions;
+const { addCard, moveCard, editCard } = userSlice.actions;
 export const UserActions = {
-  setKanban,
   addCard,
   moveCard,
   editCard,

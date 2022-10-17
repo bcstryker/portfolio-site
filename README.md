@@ -62,7 +62,7 @@ _12/2016-Present_
 
 **Java:** This was the first language I learned, however that was over 15 years ago and I've certainly forgotten most of what I learned.
 
-**HTML, CSS, JavaScript:** Dabbled with this classic web-development trio in college and to build the occasional site. I didn't find my way back to web development until about two years ago when I started working with JS/TS and Angular/React. For the past year or so I have worked with TS extensively.
+**HTML, CSS, JavaScript:** Dabbled with this classic web-development trio in college to build the occasional site. I didn't find my way back to web development until about two years ago when I started working with JS/TS and Angular/React. For the past year or so I have worked with TS extensively.
 
 **Python:** I learned Python for basic scripting, then transitioned into a role training network engineers and system architects from companies around the world how to manage their on-site and cloud infrastructure with Python. The companies include SAP, NASA, Verizon, Comcast, T-Mobile, UPS, Century Link, and many more.
 

@@ -1,78 +1,46 @@
-# Brandon Stryker
+# Getting Started with Create React App
 
----
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-email: bcstryker@gmail.com  
-discord: [stryker](https://discordapp.com/users/537443550410047499)  
-github: [bcstryker](https://www.github.com/bcstryker)
+## Available Scripts
 
----
+In the project directory, you can run:
 
-## Experience
+### `npm start`
 
-**Software Engineer, [Pickle Finance](https://www.pickle.finance/):**  
-_11/2021 - present_
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-Maintenance and features on React TS front-end tasks, ethers.js Web3 contract call automation orchestrated via AWS Lambda, internal tooling to support management and Scrum leaders:
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-- Created internal dashboard reporting on asset status, top gainers/losers, chain revenues, errors and warnings etc.
-- Created data visualization charts page for [asset](https://app.pickle.finance/stats) and [stakeholder](https://app.pickle.finance/dill) stats.
-- Designed and implemented "Scrum-bot." UI for team devs to submit daily async stand-up, signed web3 messages containing stand-up data sent to db, monitored reporting and tagged non-participatory team members via discord bot.
+### `npm test`
 
-**Software Engineer, [MinMax Data](https://www.minmaxdata.com), Contractor**  
-_02/2020-12/2021_
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-- Data visualization dashboard for government agency (possibly the one with the most data, after the NSA of course). Leveraged knowledge in:
-  - SQL
-  - R
-  - Figma
-- Occasional data visualization with Tableaux and PowerBI
-- Full-stack POC for a resume builder app. Leveraged knowledge in:
-  - MongoDB
-  - Express
-  - Angular
-  - Node
+### `npm run build`
 
-**Trainer/Course Developer, [Skyline-ATS](https://www.skyline-ats.com), Contractor**
-_12/2016-Present_
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-- Instruct [IPWSP-NE](https://www.fastlaneus.com/course/ot-ipwsp-ne) course (over 100 4-5 day courses taught)
-- Develop RestAPI lab work for IPWSP-NE
-- Develop cloud based variation on IPWSP focusing on AWS using boto3 ([IPWSP-CE](https://www.fastlaneus.com/course/ot-ipwsp-ce))
-- Develop [Deep Learning and Docker](https://catalog.skyline-ats.com/course/deep-learning-and-docker-nvidia-dgx-1)
-- Conceptualized and developed all the labs for Cisco [PRNE](https://www.cisco.com/c/en/us/training-events/
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-## Technical Experience
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### Projects (small engagements/stuff I wanted to do):
+### `npm run eject`
 
-- Customer referral and ordering app for discrete organization. Leveraged knowledge in:
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-  - Python
-  - ngrok
-  - Twilio
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-- My [developer portfolio site](https://www.brandonstryker.com) (WIP). Here is the [git repo](https://github.com/bcstryker/portfolio-site). Leveraged knowledge in:
-  - JavaScript/TypeScript
-  - React
-  - Next
-  - Web hosting (DNS, Vercel)
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-### Programming Languages
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-**Java:** This was the first language I learned, however that was over 15 years ago and I've certainly forgotten most of what I learned.
+## Learn More
 
-**HTML, CSS, JavaScript:** Dabbled with this classic web-development trio in college to build the occasional site. I didn't find my way back to web development until about two years ago when I started working with JS/TS and Angular/React. For the past year or so I have worked with TS extensively.
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-**Python:** I learned Python for basic scripting, then transitioned into a role training network engineers and system architects from companies around the world how to manage their on-site and cloud infrastructure with Python. The companies include SAP, NASA, Verizon, Comcast, T-Mobile, UPS, Century Link, and many more.
-
-**R:** I did not know R, then I was brought onto a project for a big government agency so I learned R. I did not enjoy working with it. I completed the project and everyone was happy. I do not want to work with R again.
-
-Basic knowledge of **AWS**, **Docker**, **Linux**, **Regex**, **Solidity/Web3**, **SQL**
-
-## Certifications
-
-- SCRUM PSA I
-- AWS CSA (expired)
-
-_If any links to company sites or course descriptions are broken, I apologize. I do not maintain these external resources._
+To learn React, check out the [React documentation](https://reactjs.org/).

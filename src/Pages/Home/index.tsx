@@ -75,7 +75,7 @@ export default function Home() {
         />
 
         <ParallaxLayer
-          offset={0}
+          offset={1}
           speed={0.1}
           onClick={() => parallax.current.scrollTo(1)}
           style={{

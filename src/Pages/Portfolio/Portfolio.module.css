@@ -1,0 +1,4 @@
+.myName {
+    color: #F7F7F2;
+    font-size: clamp(1rem, 2.5vw + 1rem, 3rem);
+}

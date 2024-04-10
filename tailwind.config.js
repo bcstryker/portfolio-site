@@ -31,6 +31,11 @@ module.exports = {
           DEFAULT: '#fe5f55',
           100: '#430500',
           // add all other shades
+        },
+        azure: {
+          DEFAULT: '#0077b6',
+          100: '#001d3d',
+          // add all other shades
         }
       }
     }

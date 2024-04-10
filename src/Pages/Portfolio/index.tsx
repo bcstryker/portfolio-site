@@ -4,7 +4,6 @@ import styles from './Portfolio.module.css';
 import ItalianFlag from "./ItalianFlag";
 import MyName from "./MyName";
 import { useSprings, animated } from "@react-spring/web";
-import Skyline from "./Skyline";
 
 export default function Portfolio() {
   const parallax = useRef<IParallax>(null!)
@@ -32,6 +31,7 @@ export default function Portfolio() {
 
   return (
     <div className='w-full h-full bg-azure'>
+      <p>Nothing Here.</p>
       {/* <Parallax ref={parallax} pages={2}>
         <ParallaxLayer
           offset={0}
@@ -69,7 +69,6 @@ export default function Portfolio() {
           <SteamyMountains />
         </ParallaxLayer>
       </Parallax> */}
-      <Skyline />
     </div>
   );
 }

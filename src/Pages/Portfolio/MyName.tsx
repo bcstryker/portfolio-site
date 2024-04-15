@@ -1,6 +1,5 @@
 import { ParallaxLayer } from "@react-spring/parallax";
 import SlidingLetter from "./SlidingLetter";
-import { useEffect, useState } from "react";
 
 export default function MyName({imageDiameter}: { imageDiameter: number}) {
     const word = "BRANDON STRYKER";

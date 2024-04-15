@@ -1,5 +1,4 @@
 import { useSprings, animated } from '@react-spring/web';
-import styles from './Portfolio.module.css';
 
 export default function SlidingLetter({
   letter, index, length, imageDiameter
@@ -22,30 +21,50 @@ export default function SlidingLetter({
 
   // useSprings to handle the animations
   const [animations] = useSprings(length, i => ({
-    from: { x: window.innerWidth / 2, y: -1000, rotateZ: 0 }, // Start above the viewport, centered horizontally
+    from: { x: window.innerWidth / 2, y: 0, rotateZ: 0 }, // Start above the viewport, centered horizontally
     to: {
       x: finalX,
       y: finalY,
       rotateZ: finalRotate
     },
     delay: 1000 + 100 * i, // Delay each letter slightly to create a sequence
-    config: { tension: 280, friction: 60 } // Adjust for a smoother animation feel
+    config: { tension: 20, friction: 10 } // Adjust for a smoother animation feel
   }));
 
   // Render the animated component
   return (
     <animated.div
-      style={{
-        width: 80,
-        height: 80,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        ...animations[index],
-      }}
-    >
-      <p className={styles.myName}>{letter}</p>
-    </animated.div>
+  style={{
+    width: 80,
+    height: 80,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    ...animations[index],
+  }}
+>
+  <p style={{
+      color: 'white',
+      fontSize: '4rem',
+      textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4), 0 0 40px #9500ff, 0 0 70px #9500ff, 0 0 80px #9500ff, 0 0 100px #9500ff'
+  }}>
+    {letter}
+  </p>
+</animated.div>
+    // <animated.div
+    //   style={{
+    //     width: 80,
+    //     height: 80,
+    //     display: 'flex',
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     position: 'absolute',
+    //     ...animations[index],
+    //   }}
+    // >
+    //   <p className={styles.myName}>{letter}</p>
+    // </animated.div>
   );
 }

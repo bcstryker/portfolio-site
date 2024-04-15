@@ -1,0 +1,21 @@
+.echo-container {
+    position: relative;
+    font-size: 48px;
+    font-weight: bold;
+    width: fit-content;
+    margin: 50px;
+    user-select: none;
+  }
+  
+  .echo-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+  }
+  
+  .main-text {
+    position: relative; /* Ensures main text is above all echoes */
+  }
+
+  

@@ -6,6 +6,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        background: {
+          DEFAULT: '#f7f7f2',
+          100: '#3d3d25',
+          // add all other shades
+        },
         delft_blue: {
           DEFAULT: '#2d2e62',
           100: '#090914',

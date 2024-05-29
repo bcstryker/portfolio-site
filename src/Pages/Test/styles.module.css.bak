@@ -84,14 +84,3 @@
     }
   }
   
-  .trapezoid {
-    position: absolute;
-    width: 100%; /* Adjust based on your layout */
-    height: 100px; /* Height of the trapezoid */
-    bottom: -100px; /* Position it right below room1 */
-    left: 0;
-    background-color: #ccc; /* Adjust color as needed */
-    clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
-    transition: background-color 0.3s;
-  }
-  

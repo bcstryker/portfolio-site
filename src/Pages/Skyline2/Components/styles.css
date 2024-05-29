@@ -1,0 +1,20 @@
+.steel-div {
+    background: linear-gradient(145deg, #d7d7d7, #c9c9c9, #e0e0e0);
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}
+
+.steel-div .etched-text {
+    color: #6c6c6c;
+    text-shadow: 
+        0 1px 0 #fff;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

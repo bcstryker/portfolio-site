@@ -1,134 +1,134 @@
-import React, { useRef } from 'react'
-import { Parallax, ParallaxLayer, IParallax } from '@react-spring/parallax'
-import styles from './styles.module.css'
-import SlidingBox from './SlidingBox'
+import * as React from 'react';
+import { useScroll, animated, useSpring } from '@react-spring/web';
+import styles from './styles.module.css';
 
-export default function Test() {
-  const parallax = useRef<IParallax>(null!)
+const X_LINES = 40;
+const PAGE_COUNT = 5;
+const INITIAL_WIDTH = 20;
 
-  const scroll = (to: number) => {
-    if (parallax.current) {
-      parallax.current.scrollTo(to)
-    }
-  }
+export default function Zoomies() {
+  const containerRef = React.useRef<HTMLDivElement>(null!);
+
+  const [text1Styles, text1Api] = useSpring(() => ({
+    y: '100%',
+  }));
+  const [text2Styles, text2Api] = useSpring(() => ({
+    y: '100%',
+  }));
+  const [text3Styles, text3Api] = useSpring(() => ({
+    y: '100%',
+  }));
+
+  const { scrollYProgress } = useScroll({
+    container: containerRef,
+    onChange: ({ value: { scrollYProgress } }) => {
+      let screen1 = scrollYProgress >= 0.3 && scrollYProgress < 0.6;
+      let screen2 = scrollYProgress >= 0.6 && scrollYProgress < 0.9;
+      let screen3 = scrollYProgress >= 0.9;
+  
+      if (screen1) {
+        text1Api.start({ y: '0' }); // Show text for room1
+        text2Api.start({ y: '100%' }); // Hide text for room2
+        text3Api.start({ y: '100%' }); // Hide text for room3
+      } else if (screen2) {
+        text1Api.start({ y: '100%' }); // Hide text for room1
+        text2Api.start({ y: '0' }); // Show text for room2
+        text3Api.start({ y: '100%' }); // Hide text for room3
+      } else if (screen3) {
+        text1Api.start({ y: '100%' }); // Hide text for room1
+        text2Api.start({ y: '100%' }); // Hide text for room2
+        text3Api.start({ y: '0' }); // Show text for room3
+      } else {
+        // Ensure all text is hidden if none of the conditions are met
+        text1Api.start({ y: '100%' });
+        text2Api.start({ y: '100%' });
+        text3Api.start({ y: '100%' });
+      }
+    },
+    default: {
+      immediate: true,
+    },
+  });
+  
+
+  const rect1 = scrollYProgress.to([0, 0.33, 0.66, 1], [100, 0, 0, 0]);
+  const rect2 = scrollYProgress.to([0, 0.33, 0.66, 1], [100, 100, 0, 0]);
+  const rect3 = scrollYProgress.to([0, 0.33, 0.66, 1], [100, 100, 100, 0]);
+//   const trapezoidOpacity = rect1.to(size => size < 100 ? 1 : 0);
+
   return (
-    <div style={{ width: '100%', height: '100%', background: '#253237' }}>
-      <Parallax ref={parallax} pages={3}>
-        <ParallaxLayer offset={0} speed={-.2} factor={1} style={{ backgroundColor: '#253237'}}>
-          <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
-            <SlidingBox from={-.5} to={.1} delay={1500}/>
-            <SlidingBox from={-.5} to={.2} delay={1400}/>
-            <SlidingBox from={-.5} to={.3} delay={1300}/>
-
-            <SlidingBox from={-.5} to={.4} delay={1200}/>
-            <SlidingBox from={-.5} to={.5} delay={1100}/>
-            <SlidingBox from={-.5} to={.6} delay={1000}/>
-          </div>
-        </ParallaxLayer>
-        <ParallaxLayer offset={1} speed={1} style={{ backgroundColor: '#805E73' }} />
-        <ParallaxLayer offset={2} speed={1} style={{ backgroundColor: '#87BCDE' }} />
-
-        <ParallaxLayer
-          offset={0}
-          speed={0}
-          factor={3}
+    <div ref={containerRef} className={styles.body}>
+      <div className={styles.animated__layers}>
+        <animated.div className={styles.bar__container}>
+          {Array.from({ length: X_LINES }).map((_, i) => (
+            <animated.div
+              key={i}
+              className={styles.bar}
+              style={{
+                width: scrollYProgress.to(scrollP => {
+                  const percentilePosition = (i + 1) / X_LINES;
+                  return INITIAL_WIDTH / 4 + 40 * Math.cos(((percentilePosition - scrollP) * Math.PI) / 1.5) ** 32;
+                }),
+              }}
+            />
+          ))}
+        </animated.div>
+        {/* Trapezoid */}
+        {/* <animated.div
+          className={styles.trapezoid}
           style={{
-            backgroundImage: url('stars', true),
-            backgroundSize: 'cover',
+            opacity: trapezoidOpacity, // Show the trapezoid as room1 disappears
           }}
-        />
-
-        <ParallaxLayer offset={1.3} speed={-0.3} style={{ pointerEvents: 'none' }}>
-          <img alt="tmp" src={url('satellite4')} style={{ width: '15%', marginLeft: '70%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer offset={1} speed={0.8} style={{ opacity: 0.1 }}>
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '20%', marginLeft: '55%' }} />
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '10%', marginLeft: '15%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer offset={1.75} speed={0.5} style={{ opacity: 0.1 }}>
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '20%', marginLeft: '70%' }} />
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '20%', marginLeft: '40%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer offset={1} speed={0.2} style={{ opacity: 0.2 }}>
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '10%', marginLeft: '10%' }} />
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '20%', marginLeft: '75%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer offset={1.6} speed={-0.1} style={{ opacity: 0.4 }}>
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '20%', marginLeft: '60%' }} />
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '25%', marginLeft: '30%' }} />
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '10%', marginLeft: '80%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer offset={2.6} speed={0.4} style={{ opacity: 0.6 }}>
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '20%', marginLeft: '5%' }} />
-          <img alt="tmp" src={url('cloud')} style={{ display: 'block', width: '15%', marginLeft: '75%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer
-          offset={2.5}
-          speed={-0.4}
+        /> */}
+        <animated.div
+          className={styles.room1}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}>
-          <img alt="tmp" src={url('earth')} style={{ width: '60%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer
-          offset={2}
-          speed={-0.3}
-          style={{
-            backgroundSize: '80%',
-            backgroundPosition: 'center',
-            backgroundImage: url('clients', true),
+            clipPath: rect1.to(size => `inset(${size}% ${size}%)`),
           }}
-        />
-
-        <ParallaxLayer
-          offset={1}
-          speed={0.1}
-          onClick={() => parallax.current.scrollTo(1)}
+        >
+          <h1 className={styles.title}>
+            <span>
+              <animated.span style={text1Styles}>Aha!</animated.span>
+            </span>
+            <span>
+              <animated.span style={text1Styles}>You found me!</animated.span>
+            </span>
+          </h1>
+        </animated.div>
+        <animated.div
+          className={styles.room2}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <img alt="tmp" src={url('server')} style={{ width: '20%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer
-          offset={1}
-          speed={0.1}
-          onClick={() => parallax.current.scrollTo(2)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <img alt="tmp" src={url('bash')} style={{ width: '40%' }} />
-        </ParallaxLayer>
-
-        <ParallaxLayer
-          offset={2}
-          speed={-0}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            clipPath: rect2.to(size => `inset(${size}% ${size}%)`),
           }}
-          onClick={() => parallax.current.scrollTo(0)}>
-          <img alt="tmp" src={url('clients-main')} style={{ width: '40%' }} />
-        </ParallaxLayer>
-      </Parallax>
+        >
+            <h1 className={styles.title}>
+            <span>
+              <animated.span style={text2Styles}>Oh no!</animated.span>
+            </span>
+            <span>
+              <animated.span style={text2Styles}>You found me again!</animated.span>
+            </span>
+          </h1>
+        </animated.div>
+        <animated.div
+          className={styles.room3}
+          style={{
+            clipPath: rect3.to(size => `inset(${size}% ${size}%)`),
+          }}
+        >
+            <h1 className={styles.title}>
+            <span>
+              <animated.span style={text2Styles}>Shucks!</animated.span>
+            </span>
+            <span>
+              <animated.span style={text2Styles}>I'm bad at hiding...</animated.span>
+            </span>
+          </h1>
+        </animated.div>
+      </div>
+      {new Array(PAGE_COUNT).fill(null).map((_, index) => (
+        <div className={styles.full__page} key={index} />
+      ))}
     </div>
-  )
+  );
 }
-
-const url = (name: string, wrap = false) =>
-  `${wrap ? 'url(' : ''}https://awv3node-homepage.surge.sh/build/assets/${name}.svg${wrap ? ')' : ''}`

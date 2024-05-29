@@ -11,7 +11,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <AnimatedCursor
+    {/* <AnimatedCursor
       innerSize={8}
       outerSize={15}
       color="255, 255, 255"
@@ -31,7 +31,7 @@ root.render(
         "button",
         ".link",
       ]}
-    />
+    /> */}
     <BrowserRouter>
       <Suspense fallback={<Progress />}>
         <App />

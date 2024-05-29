@@ -1,6 +1,6 @@
 import ParallaxSkyline from "./ParallaxSkyline";
 
-export default function Skyline() {
+export default function Skyline1() {
     console.log('Skyline component is rendered');
 
     return (

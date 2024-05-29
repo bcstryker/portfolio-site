@@ -1,0 +1,8 @@
+/* Home/Home.module.css */
+.nextPageButton {
+    background-color: rgb(206, 184, 171);
+    color: rgb(71, 65, 110);
+    border-radius: 10px;
+    font-size: 3vh;    
+    padding: 1vh 2vh;
+}

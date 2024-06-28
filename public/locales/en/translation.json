@@ -4,8 +4,8 @@
     "title": "Clock With Alarm"
   },
   "home": {
-    "banner": "Welcome to my website!",
     "repoLinkText": "Portfolio Site GitHub Repo",
+    "subtitle": "Welcome to my website!",
     "title": "Home Page",
     "welcome": "Welcome!",
     "welcomeMessage": "Hello Friend, \n\n\tMy name is Brandon and this is my developer portfolio site. I do not know how you ended up here but please be aware, this site is under development. The word game is fun, but not much else here works yet. Maybe play some not-wordle and check back some other time.\n\n\tBy the way, I made this website using TS, React, and Next. It is hosted with vercel and you can check out the public repo at the link below."
@@ -15,8 +15,8 @@
     "title": "Kanban Board"
   },
   "meta": {
-    "description": "Web Developer Showcase",
-    "titleFull": "Brandon Stryker Developer Showcase"
+    "description": "Web Development Portfolio",
+    "titleFull": "Brandon Stryker"
   },
   "nav": {
     "clock": "Clock",
@@ -26,5 +26,10 @@
   "wordGame": {
     "subtitle": "Like Wordle, but it's not!",
     "title": "Word Game"
+  },
+  "404": {
+    "message": "Please check your URL or head back to the home page.",
+    "subtitle": "Page Not Found",
+    "title": "404 Error"
   }
 }

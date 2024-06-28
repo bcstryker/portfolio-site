@@ -37,7 +37,7 @@ const PageTitle: FC = () => {
         {t("home.title")}
       </h1>
       <h2 className="font-body font-normal text-foreground-alt-100 text-sm sm:text-base leading-4 sm:leading-6 mt-1">
-        {t("home.banner")}
+        {t("home.subtitle")}
       </h2>
     </>
   );

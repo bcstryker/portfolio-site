@@ -1,6 +1,7 @@
 import { ParallaxLayer } from "@react-spring/parallax";
 import React from "react";
 import { url } from "../../utils";
+import SectionTitle from "../SectionTitle";
 
 interface AboutProps {
   parallax: any;
@@ -9,6 +10,16 @@ interface AboutProps {
 const About: React.FC<AboutProps> = ({ parallax }) => {
   return (
     <>
+      <ParallaxLayer
+        offset={-0.35}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginLeft: "10%",
+        }}
+      >
+        <SectionTitle title="About Us" />
+      </ParallaxLayer>
       <ParallaxLayer
         offset={-0.9}
         speed={-0.3}

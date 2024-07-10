@@ -1,5 +1,5 @@
 import { IParallax, Parallax, ParallaxLayer } from "@react-spring/parallax"
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useNavigate } from 'react-router-dom';
 import MenuBar from "./Components/MenuBar";
 import Landing from "./Components/Layers/Landing";
@@ -10,6 +10,7 @@ import About from "./Components/Layers/About";
 
 export default function Skyline2() {
   const parallax = useRef<IParallax>(null!)
+
   const navigate = useNavigate();
   return (
     <div style={{ 
@@ -17,10 +18,8 @@ export default function Skyline2() {
       height: '100%', 
       background: 'radial-gradient(circle, #00002E 30%, #000016 70%, #000000)'
   }}>
+      <MenuBar parallax={parallax}/>
       <Parallax ref={parallax} pages={5}>
-        <ParallaxLayer offset={0} speed={0} sticky={{start: 0, end: 6}}>
-          <MenuBar parallax={parallax}/>
-        </ParallaxLayer>
         <Landing parallax={parallax} />
         <ParallaxLayer offset={1} speed={1} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Training parallax={parallax} />

@@ -1,6 +1,7 @@
 import { ParallaxLayer } from "@react-spring/parallax";
 import React from "react";
 import "../styles.css";
+import SectionTitle from "../SectionTitle";
 
 interface TrainingProps {
   parallax: any;
@@ -9,32 +10,37 @@ interface TrainingProps {
 const Training: React.FC<TrainingProps> = ({ parallax }) => {
   return (
     <>
-      {/* <ParallaxLayer
-        offset={-.25}
-        speed={1}
-        onClick={() => parallax.current.scrollTo(2)}
+      <ParallaxLayer
+        offset={-0.2}
+        speed={1.1}
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "left",
+          marginLeft: "10%",
         }}
       >
-        <div className="steel-div" style={{marginLeft: "10%"}}>
-          <span className="etched-text">TRAINING</span>
-        </div>
-      </ParallaxLayer> */}
+        <SectionTitle title="Training" />
+      </ParallaxLayer>
+
       <ParallaxLayer
         offset={-0.05}
-        speed={.9}
+        speed={0.9}
         onClick={() => parallax.current.scrollTo(2)}
         style={{
           display: "flex",
-          alignItems: "center",
+          padding: "0 10%",
         }}
       >
-        <img alt="tmp" src={'online-learning.svg'} style={{ width: "40%", marginLeft: "15%" }} />
+        <img className="w-[40%] ml-[10%]" alt="tmp" src={"online-learning.svg"} />
+        <div className="accent-div w-96 left-32 top-48 h-fit">
+          <p>
+            We offer a wide range of training services to meet the needs of professionals in the
+            networking and network automation industry.
+          </p>
+        </div>
       </ParallaxLayer>
-      <ParallaxLayer speed={.5} style={{ opacity: 0.1 }}>
+
+      {/* <ParallaxLayer speed={.5} style={{ opacity: 0.1 }}>
         <img
           alt="tmp"
           src={url("cloud")}
@@ -45,16 +51,17 @@ const Training: React.FC<TrainingProps> = ({ parallax }) => {
           src={url("cloud")}
           style={{ display: "block", width: "15%", marginLeft: "15%" }}
         />
-      </ParallaxLayer>
+      </ParallaxLayer> */}
       <ParallaxLayer
-        speed={.6}
+        speed={0.6}
         style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
-        <img alt="tmp" src={'road-to-knowledge.svg'} style={{ width: "20%", marginLeft: "40%" }} />
+        <div className="accent-div ml-48 h-fit w-96">
+          <p>Our courses are designed to provide hands-on experience and practical knowledge to help you succeed in your career.</p>
+        </div>
+        <img className="w-[30vw] ml-[20vw]" alt="tmp" src={"road-to-knowledge.svg"} />
       </ParallaxLayer>
     </>
   );

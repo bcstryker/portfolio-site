@@ -8,8 +8,14 @@ module.exports = {
       colors: {
         background: {
           DEFAULT: 'midnightblue',
-          100: '#3d3d25',
+          100: '#151515cc',
           // add all other shades
+        },
+        foreground: {
+          DEFAULT: '#ffffffdd'
+        },
+        accent: {
+          DEFAULT: '#f15a24'
         },
         delft_blue: {
           DEFAULT: '#2d2e62',

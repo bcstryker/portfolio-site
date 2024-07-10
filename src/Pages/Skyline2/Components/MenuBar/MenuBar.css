@@ -5,9 +5,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 6vh 20vw;
-    height: 60px;
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
-    /* background-color: #000016; */
+    height: 4vh;
 }
 
 .menu-bar-link {

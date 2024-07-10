@@ -9,10 +9,10 @@ interface MenuBarProps {
 const MenuBar: React.FC<MenuBarProps> = ({parallax}) => {
     return (
         <div className="menu-bar">
-            <MenuBarLink to=".3" label="Training" parallax={parallax}/>
+            <MenuBarLink to=".35" label="Training" parallax={parallax}/>
             <MenuBarLink to="1.1" label="Services" parallax={parallax}/>
-            <MenuBarLink to="2" label="About Us" parallax={parallax}/>
-            <MenuBarLink to="3.25" label="Contact" parallax={parallax}/>
+            <MenuBarLink to="2.025" label="About Us" parallax={parallax}/>
+            <MenuBarLink to="3.23" label="Contact" parallax={parallax}/>
         </div>
     );
 };

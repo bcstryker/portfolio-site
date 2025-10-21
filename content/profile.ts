@@ -8,7 +8,7 @@ export const profile = {
   email: "bcstryker@gmail.com",
   socials: [
     {name: "LinkedIn", href: "https://www.linkedin.com/in/brandonstryker"},
-    {name: "GitHub", href: "https://github.com/brandonstryker"},
+    {name: "GitHub", href: "https://github.com/bcstryker"},
   ],
   highlights: [
     {
@@ -67,27 +67,27 @@ export const experiences = [
 
 export const certifications = [
   {
-    name: "Cisco Certified DevNet Professional",
+    name: "Cisco Certified DevNet Professional (CCDevP)",
     issuer: "Cisco",
     issued: "2025",
   },
   {
-    name: "Cisco Certified DevNet Specialist - DevOps",
+    name: "Cisco Certified DevNet Specialist - DevOps (DEVOPS)",
     issuer: "Cisco",
     issued: "2025",
   },
   {
-    name: "Cisco Certified DevNet Specialist - Core",
+    name: "Cisco Certified DevNet Specialist - Core (DEVCOR)",
     issuer: "Cisco",
     issued: "2024",
   },
   {
-    name: "Cisco Certified DevNet Associate",
+    name: "Cisco Certified DevNet Associate (DEVASC)",
     issuer: "Cisco",
     issued: "2024",
   },
   {
-    name: "CCNA",
+    name: "Cisco Certified Network Administrator (CCNA)",
     issuer: "Cisco",
     issued: "2025",
   },

@@ -36,12 +36,14 @@ export default function Page() {
                     width={176}
                     height={176}
                     priority
-                    className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg md:h-32 md:w-32"
+                    className="h-28 w-28 rounded-full border-2 border-brand bg-white object-cover shadow-lg md:h-32 md:w-32"
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand">{profile.role}</span>
-                  <h1 className="heading mt-2 text-4xl md:text-5xl">{profile.name}</h1>
+                  <h1 className="heading text-4xl md:text-5xl">{profile.name}</h1>
+                  <span className="text-xs mt-2 ml-2 font-semibold uppercase tracking-[0.3em] text-brand">
+                    {profile.role}
+                  </span>
                 </div>
               </div>
               <p className="mt-6 text-lg text-gray-600 md:text-xl">{profile.tagline}</p>

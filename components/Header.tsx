@@ -1,19 +1,18 @@
-
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
-import { profile } from "@/content/profile";
+import {profile} from "@/content/profile";
 
 const links = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#skills", label: "Skills" },
-  { href: "#projects", label: "Projects" },
-  { href: "#teaching", label: "Teaching" },
-  { href: "#contact", label: "Contact" }
+  {href: "#home", label: "Home"},
+  {href: "#about", label: "About"},
+  {href: "#experience", label: "Experience"},
+  {href: "#skills", label: "Skills"},
+  {href: "#projects", label: "Projects"},
+  {href: "#teaching", label: "Teaching"},
+  {href: "#contact", label: "Contact"},
 ];
 
 export default function Header() {
@@ -39,18 +38,12 @@ export default function Header() {
         scrolled ? "border-gray-200 bg-white/80 backdrop-blur" : "bg-white"
       }`}
     >
-      <nav className="container flex items-center justify-between py-4">
-        <Link href="#home" className="text-sm font-semibold tracking-tight sm:text-base">
-          {profile.name}
-        </Link>
+      <nav className="container flex items-center justify-end py-4">
         <div className="flex items-center gap-3">
           <ul className="hidden items-center gap-6 md:flex">
-            {links.map(link => (
+            {links.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-sm text-gray-700 transition hover:text-gray-900"
-                >
+                <Link href={link.href} className="text-sm text-gray-700 transition hover:text-gray-900">
                   {link.label}
                 </Link>
               </li>
@@ -68,7 +61,7 @@ export default function Header() {
             type="button"
             className="inline-flex items-center justify-center rounded-full border border-gray-300 p-2 text-sm text-gray-700 transition hover:border-brand hover:text-brand md:hidden"
             aria-label="Toggle navigation"
-            onClick={() => setOpen(prev => !prev)}
+            onClick={() => setOpen((prev) => !prev)}
           >
             <span className="sr-only">Toggle menu</span>
             <svg
@@ -97,7 +90,7 @@ export default function Header() {
         <div className="border-t border-gray-200 bg-white md:hidden">
           <div className="container py-4">
             <ul className="flex flex-col gap-3">
-              {links.map(link => (
+              {links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

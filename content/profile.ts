@@ -168,7 +168,7 @@ export const education = [
   },
   {
     school: "M.S., Software Engineering — West Virginia University",
-    detail: "William M. Statler College of Engineering & Mineral Resources",
+    detail: "Benjamin M. Statler College of Engineering & Mineral Resources",
   },
 ];
 

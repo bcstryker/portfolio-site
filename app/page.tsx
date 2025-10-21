@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
 import {certifications, education, experiences, profile, projects, skills, teaching} from "@/content/profile";
@@ -26,9 +28,23 @@ export default function Page() {
         <section id="home" className="section">
           <div className="grid items-start gap-10 md:grid-cols-[1.3fr_1fr]">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand">{profile.role}</span>
-              <h1 className="heading mt-4 text-4xl md:text-5xl">{profile.name}</h1>
-              <p className="mt-4 text-lg text-gray-600 md:text-xl">{profile.tagline}</p>
+              <div className="mt-5 flex items-center gap-6">
+                <div className="flex-shrink-0">
+                  <Image
+                    src="/hero-image.png"
+                    alt="Brandon Stryker portrait"
+                    width={176}
+                    height={176}
+                    priority
+                    className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg md:h-32 md:w-32"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand">{profile.role}</span>
+                  <h1 className="heading mt-2 text-4xl md:text-5xl">{profile.name}</h1>
+                </div>
+              </div>
+              <p className="mt-6 text-lg text-gray-600 md:text-xl">{profile.tagline}</p>
               <div className="mt-6 flex flex-wrap gap-3 text-sm text-gray-500">
                 <span className="badge bg-blue-50 text-brand">Based in {profile.location}</span>
                 {profile.availability ? <span className="badge">{profile.availability}</span> : null}

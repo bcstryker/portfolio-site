@@ -34,3 +34,49 @@ html, body {
 .muted {
   @apply text-sm text-gray-500;
 }
+
+@keyframes games-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes games-glow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+  }
+}
+
+.games-fade {
+  animation: games-fade 700ms ease both;
+}
+
+.games-fade-delay-1 {
+  animation-delay: 120ms;
+}
+
+.games-fade-delay-2 {
+  animation-delay: 240ms;
+}
+
+.games-fade-delay-3 {
+  animation-delay: 360ms;
+}
+
+.games-glow {
+  animation: games-glow 3s ease-in-out infinite;
+}
+
+.clip-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}

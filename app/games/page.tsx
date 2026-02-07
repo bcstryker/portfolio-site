@@ -117,7 +117,7 @@ function GameCard({
 }: {
   children: ReactNode;
   title: string;
-  subtitle: string;
+  subtitle: ReactNode;
   className?: string;
 }) {
   return (
@@ -126,7 +126,7 @@ function GameCard({
     >
       <div className="space-y-2">
         <h2 className="text-2xl font-semibold text-slate-900">{title}</h2>
-        <p className="text-sm text-slate-600">{subtitle}</p>
+        <div className="text-sm text-slate-600">{subtitle}</div>
       </div>
       <div className="mt-6">{children}</div>
     </section>
@@ -148,6 +148,15 @@ function ChoiceButton({label, onClick, disabled}: {label: string; onClick: () =>
       {label}
     </button>
   );
+}
+
+function speakText(text: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.9;
+  utterance.pitch = 1.1;
+  window.speechSynthesis.speak(utterance);
 }
 
 export default function GamesPage() {
@@ -332,7 +341,23 @@ export default function GamesPage() {
             </div>
           </GameCard>
 
-          <GameCard title="Spelling Builder" subtitle={wordRound.clue} className="games-fade games-fade-delay-2">
+          <GameCard
+            title="Spelling Builder"
+            subtitle={
+              <span className="inline-flex items-center gap-2">
+                <span>{wordRound.clue}</span>
+                <button
+                  type="button"
+                  onClick={() => speakText(wordRound.clue)}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 bg-white text-xs"
+                  aria-label="Read the clue aloud"
+                >
+                  🔊
+                </button>
+              </span>
+            }
+            className="games-fade games-fade-delay-2"
+          >
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5">
               <div className="flex gap-3">
                 {wordLetters.map((letter, index) => (
@@ -489,7 +514,17 @@ export default function GamesPage() {
 
           <GameCard title="First Sound Tap" subtitle={soundRound.pick.word.toUpperCase()} className="games-fade games-fade-delay-3">
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5">
-              <p className="text-sm text-slate-600">{soundRound.pick.clue}</p>
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <span>{soundRound.pick.clue}</span>
+                <button
+                  type="button"
+                  onClick={() => speakText(`${soundRound.pick.word}. ${soundRound.pick.clue}`)}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 bg-white text-base"
+                  aria-label="Read the clue aloud"
+                >
+                  🔊
+                </button>
+              </div>
               <p className="text-sm text-slate-600">{soundMessage}</p>
             </div>
             <div className="mt-6 grid grid-cols-3 gap-4">

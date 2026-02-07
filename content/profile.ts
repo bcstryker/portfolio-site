@@ -33,7 +33,7 @@ export const experiences = [
   {
     company: "Skyline Advanced Technology Services",
     role: "Developer & Cisco Certified Systems Instructor",
-    period: "2020 — Present",
+    period: "Oct 2023 — Present",
     location: "Remote / Newburgh, NY",
     bullets: [
       "Deliver Cisco DevNet, routing, switching, and automation courses with hands-on labs tailored to client outcomes.",
@@ -42,9 +42,20 @@ export const experiences = [
     ],
   },
   {
+    company: "FasTraxPOS",
+    role: "Product Owner / Senior Software Engineer",
+    period: "Nov 2022 — Oct 2023",
+    location: "Remote",
+    bullets: [
+      "Led the BrightSign digital signage initiative from unboxing the first player through production launch.",
+      "Defined the on-device application architecture, tech stack, and deployment strategy for reliable in-store playback.",
+      "Integrated devices with the management platform and built admin tooling for provisioning, content scheduling, and updates.",
+    ],
+  },
+  {
     company: "Pickle Finance",
     role: "Full-Stack Engineer & Scrum Master",
-    period: "2018 — 2020",
+    period: "Dec 2021 — Oct 2022",
     location: "Remote",
     bullets: [
       "Shipped customer-facing web experiences with TypeScript, Next.js, and Node APIs focused on lending workflows.",
@@ -55,7 +66,7 @@ export const experiences = [
   {
     company: "MinMax Data",
     role: "Software Engineer",
-    period: "2016 — 2018",
+    period: "Mar 2020 — Dec 2021",
     location: "New York, NY",
     bullets: [
       "Built ETL services and reporting dashboards that surfaced supply-chain analytics for enterprise customers.",

@@ -30,6 +30,12 @@ const shapeOptions = [
   {id: "square", className: "rounded-lg bg-amber-400"},
   {id: "triangle", className: "bg-emerald-400 clip-triangle"},
 ];
+const colorOptions = [
+  {id: "rose", label: "red", className: "bg-rose-400"},
+  {id: "amber", label: "yellow", className: "bg-amber-400"},
+  {id: "emerald", label: "green", className: "bg-emerald-400"},
+  {id: "sky", label: "blue", className: "bg-sky-400"},
+];
 
 function getRandomItem<T>(items: T[]) {
   return items[Math.floor(Math.random() * items.length)];
@@ -90,8 +96,18 @@ function buildWordRound() {
 }
 
 function buildSameDifferentRound() {
-  const base = getRandomItem(shapeOptions);
-  const different = getRandomDistinct(shapeOptions, [base]);
+  const baseShape = getRandomItem(shapeOptions).id;
+  const baseColor = getRandomItem(colorOptions).id;
+  const mode = Math.random() < 0.5 ? "shape" : "color";
+  let differentShape = baseShape;
+  let differentColor = baseColor;
+  if (mode === "shape") {
+    differentShape = getRandomItem(shapeOptions.filter((s) => s.id !== baseShape)).id;
+  } else {
+    differentColor = getRandomItem(colorOptions.filter((c) => c.id !== baseColor)).id;
+  }
+  const base = {shape: baseShape, color: baseColor};
+  const different = {shape: differentShape, color: differentColor};
   const items = shuffle([
     {...base, key: "same-1"},
     {...base, key: "same-2"},
@@ -129,6 +145,63 @@ function buildDifferent<T>(builder: () => T, isSame: (next: T) => boolean, attem
     remaining -= 1;
   }
   return next;
+}
+
+function shapeLabel(shapeId: string) {
+  return shapeId === "triangle" ? "triangle" : shapeId;
+}
+
+function shapeClass(shapeId: string) {
+  if (shapeId === "triangle") return "clip-triangle";
+  if (shapeId === "square") return "rounded-lg";
+  return "rounded-full";
+}
+
+function numberToWords(value: number) {
+  const words = [
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+  ];
+  return words[value] ?? String(value);
+}
+
+function samePatternSlots(a: {shape: string; color: string}[], b: {shape: string; color: string}[]) {
+  if (a.length !== b.length) return false;
+  return a.every((slot, index) => slot.shape === b[index].shape && slot.color === b[index].color);
+}
+
+function buildPatternRound() {
+  const combos = shapeOptions.flatMap((shape) =>
+    colorOptions.map((color) => ({shape: shape.id, color: color.id}))
+  );
+  const base = shuffle(combos).slice(0, 3);
+  const slots = [...base, ...base];
+  const missingIndex = Math.floor(Math.random() * slots.length);
+  const missing = slots[missingIndex];
+  const distractors = new Set<string>([`${missing.color}-${missing.shape}`]);
+  while (distractors.size < 3) {
+    const candidate = {
+      shape: getRandomItem(shapeOptions).id,
+      color: getRandomItem(colorOptions).id,
+    };
+    distractors.add(`${candidate.color}-${candidate.shape}`);
+  }
+  const choices = shuffle(
+    Array.from(distractors).map((key) => {
+      const [color, shape] = key.split("-");
+      return {color, shape};
+    })
+  );
+  return {slots, missingIndex, missing, choices};
 }
 
 function GameCard({
@@ -170,21 +243,6 @@ function ChoiceButton({label, onClick, disabled}: {label: string; onClick: () =>
       {label}
     </button>
   );
-}
-
-function speakText(text: string, onEnd?: () => void) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.9;
-  utterance.pitch = 1.1;
-  if (onEnd) utterance.onend = onEnd;
-  window.speechSynthesis.speak(utterance);
-}
-
-function speakOption(value: string, onEnd?: () => void) {
-  const normalized = /^[A-Z]$/.test(value) ? value.toLowerCase() : value;
-  speakText(normalized, onEnd);
 }
 
 function playChime() {
@@ -232,12 +290,12 @@ export default function GamesPage() {
   const [wordCorrect, setWordCorrect] = useState(false);
 
   const [sameDifferentRound, setSameDifferentRound] = useState(() => ({
-    base: shapeOptions[0],
-    different: shapeOptions[1],
+    base: {shape: "circle", color: "rose"},
+    different: {shape: "square", color: "rose"},
     items: [
-      {...shapeOptions[0], key: "same-1"},
-      {...shapeOptions[0], key: "same-2"},
-      {...shapeOptions[1], key: "diff"},
+      {shape: "circle", color: "rose", key: "same-1"},
+      {shape: "circle", color: "rose", key: "same-2"},
+      {shape: "square", color: "rose", key: "diff"},
     ],
   }));
   const [sameDifferentMessage, setSameDifferentMessage] = useState("Tap the one that is different.");
@@ -256,7 +314,48 @@ export default function GamesPage() {
   const [soundMessage, setSoundMessage] = useState("Tap the first sound.");
   const [soundCorrect, setSoundCorrect] = useState(false);
 
+  const [patternRound, setPatternRound] = useState(() => ({
+    slots: [
+      {shape: "circle", color: "rose"},
+      {shape: "square", color: "amber"},
+      {shape: "triangle", color: "emerald"},
+      {shape: "circle", color: "rose"},
+      {shape: "square", color: "amber"},
+      {shape: "triangle", color: "emerald"},
+    ],
+    missingIndex: 4,
+    missing: {shape: "square", color: "amber"},
+    choices: [
+      {shape: "square", color: "amber"},
+      {shape: "circle", color: "rose"},
+      {shape: "square", color: "sky"},
+    ],
+  }));
+  const [patternMessage, setPatternMessage] = useState("Pick the missing shape.");
+  const [patternCorrect, setPatternCorrect] = useState(false);
+
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [voiceURI, setVoiceURI] = useState("");
+
   const wordLetters = useMemo(() => wordRound.word.toUpperCase().split(""), [wordRound.word]);
+
+  const selectedVoice = voices.find((voice) => voice.voiceURI === voiceURI);
+
+  const speakText = (text: string, onEnd?: () => void) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    utterance.pitch = 1.1;
+    if (selectedVoice) utterance.voice = selectedVoice;
+    if (onEnd) utterance.onend = onEnd;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const speakOption = (value: string, onEnd?: () => void) => {
+    const normalized = /^[A-Z]$/.test(value) ? value.toLowerCase() : value;
+    speakText(normalized, onEnd);
+  };
 
   const handleAlphabetChoice = (choice: string) => {
     const isCorrect = choice === alphabetRound.target;
@@ -294,11 +393,15 @@ export default function GamesPage() {
 
   const handleMathChoice = (choice: number) => {
     const isCorrect = choice === mathRound.answer;
-    speakOption(String(choice), isCorrect ? playChime : undefined);
     if (choice === mathRound.answer) {
+      const expression = `${numberToWords(mathRound.a)} plus ${numberToWords(mathRound.b)} equals ${numberToWords(
+        mathRound.answer
+      )}`;
+      speakText(expression, playChime);
       setMathMessage("Nice work! Tap new math to keep going.");
       setMathCorrect(true);
     } else {
+      speakOption(String(choice));
       setMathMessage("Not quite. Try again.");
     }
   };
@@ -346,12 +449,34 @@ export default function GamesPage() {
     setTrainSet(trainRound.set);
     setTrainOrder(trainRound.order);
     setSoundRound(buildSoundRound());
+    setPatternRound(buildPatternRound());
   }, []);
 
-  const handleSameDifferentChoice = (choiceId: string) => {
-    const isCorrect = choiceId === sameDifferentRound.different.id;
-    speakOption(choiceId, isCorrect ? playChime : undefined);
-    if (choiceId === sameDifferentRound.different.id) {
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    const loadVoices = () => setVoices(window.speechSynthesis.getVoices());
+    loadVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+    const saved = window.localStorage.getItem("gamesVoiceURI");
+    if (saved) setVoiceURI(saved);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (voiceURI) {
+      window.localStorage.setItem("gamesVoiceURI", voiceURI);
+    } else {
+      window.localStorage.removeItem("gamesVoiceURI");
+    }
+  }, [voiceURI]);
+
+  const handleSameDifferentChoice = (choice: {shape: string; color: string}) => {
+    const isCorrect =
+      choice.shape === sameDifferentRound.different.shape && choice.color === sameDifferentRound.different.color;
+    const colorLabel = colorOptions.find((color) => color.id === choice.color)?.label ?? choice.color;
+    speakOption(`${colorLabel} ${shapeLabel(choice.shape)}`, isCorrect ? playChime : undefined);
+    if (isCorrect) {
       setSameDifferentMessage("Nice spotting! Tap new shapes to keep going.");
       setSameDifferentCorrect(true);
     } else {
@@ -416,6 +541,32 @@ export default function GamesPage() {
     setSoundCorrect(false);
   };
 
+  const handlePatternChoice = (choice: {shape: string; color: string}) => {
+    const isCorrect = choice.shape === patternRound.missing.shape && choice.color === patternRound.missing.color;
+    const colorLabel = colorOptions.find((color) => color.id === choice.color)?.label ?? choice.color;
+    speakOption(`${colorLabel} ${shapeLabel(choice.shape)}`, isCorrect ? playChime : undefined);
+    if (isCorrect) {
+      setPatternMessage("Nice work! Tap new pattern to keep going.");
+      setPatternCorrect(true);
+    } else {
+      setPatternMessage("Not quite. Try again.");
+    }
+  };
+
+  const resetPattern = () => {
+    setPatternRound(
+      buildDifferent(
+        buildPatternRound,
+        (next) =>
+          next.missing.shape === patternRound.missing.shape &&
+          next.missing.color === patternRound.missing.color &&
+          samePatternSlots(next.slots, patternRound.slots)
+      )
+    );
+    setPatternMessage("Pick the missing shape.");
+    setPatternCorrect(false);
+  };
+
   return (
     <div
       className="min-h-screen bg-[radial-gradient(circle_at_top,#fef9c3_10%,#d1fae5_45%,#bfdbfe_100%)]"
@@ -433,12 +584,30 @@ export default function GamesPage() {
               Gentle, tap-friendly games that help kids practice letters, spelling, counting, and early math.
             </p>
           </div>
-          <Link
-            href="/"
-            className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
-          >
-            Back to portfolio
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex flex-col gap-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              Voice
+              <select
+                value={voiceURI}
+                onChange={(event) => setVoiceURI(event.target.value)}
+                className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700"
+                disabled={voices.length === 0}
+              >
+                <option value="">System default</option>
+                {voices.map((voice) => (
+                  <option key={voice.voiceURI} value={voice.voiceURI}>
+                    {voice.name} ({voice.lang})
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Link
+              href="/"
+              className="rounded-full border border-slate-300 bg-white px-5 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
+            >
+              Back to portfolio
+            </Link>
+          </div>
         </header>
       </div>
 
@@ -451,12 +620,13 @@ export default function GamesPage() {
                 <p className="mt-2 text-5xl font-semibold text-slate-900">{alphabetRound.target}</p>
               </div>
               <div className="text-right text-sm text-slate-600">
-                <p>{alphabetMessage}</p>
                 {alphabetCorrect ? (
-                  <span className="mt-2 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
                     Correct!
                   </span>
-                ) : null}
+                ) : (
+                  <p>{alphabetMessage}</p>
+                )}
               </div>
             </div>
             <div className="mt-6 grid grid-cols-3 gap-4">
@@ -507,7 +677,15 @@ export default function GamesPage() {
                   </span>
                 ))}
               </div>
-              <p className="text-sm text-slate-600">{wordMessage}</p>
+              <div className="text-sm text-slate-600">
+                {wordCorrect ? (
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    Correct!
+                  </span>
+                ) : (
+                  <p>{wordMessage}</p>
+                )}
+              </div>
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
               {wordRound.letters.map((letter, index) => (
@@ -541,11 +719,6 @@ export default function GamesPage() {
               >
                 New word
               </button>
-              {wordCorrect ? (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-700">
-                  Word complete!
-                </span>
-              ) : null}
             </div>
           </GameCard>
 
@@ -561,12 +734,13 @@ export default function GamesPage() {
                 ))}
               </div>
               <div className="text-right text-sm text-slate-600">
-                <p>{countMessage}</p>
                 {countCorrect ? (
-                  <span className="mt-2 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
                     Correct!
                   </span>
-                ) : null}
+                ) : (
+                  <p>{countMessage}</p>
+                )}
               </div>
             </div>
             <div className="mt-6 grid grid-cols-3 gap-4">
@@ -588,15 +762,16 @@ export default function GamesPage() {
           <GameCard title="Tiny Math" subtitle="Add the numbers together." className="games-fade games-fade-delay-3">
             <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-white/70 p-6">
               <p className="text-3xl font-semibold text-slate-900">
-                {mathRound.a} + {mathRound.b} = ?
+                {mathRound.a} + {mathRound.b} = {mathCorrect ? mathRound.answer : "?"}
               </p>
               <div className="text-right text-sm text-slate-600">
-                <p>{mathMessage}</p>
                 {mathCorrect ? (
-                  <span className="mt-2 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
                     Correct!
                   </span>
-                ) : null}
+                ) : (
+                  <p>{mathMessage}</p>
+                )}
               </div>
             </div>
             <div className="mt-6 grid grid-cols-3 gap-4">
@@ -618,12 +793,13 @@ export default function GamesPage() {
           <GameCard title="Same or Different" subtitle="Spot the one that is different." className="games-fade games-fade-delay-1">
             <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5">
               <div className="text-sm text-slate-600">
-                <p>{sameDifferentMessage}</p>
                 {sameDifferentCorrect ? (
-                  <span className="mt-2 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
                     Correct!
                   </span>
-                ) : null}
+                ) : (
+                  <p>{sameDifferentMessage}</p>
+                )}
               </div>
               <button
                 type="button"
@@ -634,29 +810,94 @@ export default function GamesPage() {
               </button>
             </div>
             <div className="mt-6 flex flex-wrap gap-4">
-              {sameDifferentRound.items.map((shape) => (
+              {sameDifferentRound.items.map((item) => {
+                const colorClass = colorOptions.find((color) => color.id === item.color)?.className ?? "bg-slate-200";
+                return (
                 <button
-                  key={shape.key}
+                  key={item.key}
                   type="button"
-                  onClick={() => handleSameDifferentChoice(shape.id)}
+                  onClick={() => handleSameDifferentChoice(item)}
                   className="flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5"
-                  aria-label={`Choose ${shape.id}`}
+                  aria-label={`Choose ${item.color} ${item.shape}`}
                 >
-                  <span className={`block h-10 w-10 ${shape.className}`} />
+                  <span className={`block h-10 w-10 ${shapeClass(item.shape)} ${colorClass}`} />
                 </button>
-              ))}
+              )})}
+            </div>
+          </GameCard>
+
+          <GameCard title="Pattern Finder" subtitle="Pick the missing colored shape." className="games-fade games-fade-delay-2">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5">
+              <div className="text-sm text-slate-600">
+                {patternCorrect ? (
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    Correct!
+                  </span>
+                ) : (
+                  <p>{patternMessage}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={resetPattern}
+                className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+              >
+                New pattern
+              </button>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-4">
+              {patternRound.slots.map((slot, index) => {
+                const colorClass = colorOptions.find((color) => color.id === slot.color)?.className ?? "bg-slate-200";
+                const missingColorClass =
+                  colorOptions.find((color) => color.id === patternRound.missing.color)?.className ?? "bg-slate-200";
+                return (
+                  <div
+                    key={`${slot.shape}-${slot.color}-${index}`}
+                    className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-slate-200 bg-white"
+                  >
+                    {index === patternRound.missingIndex ? (
+                      patternCorrect ? (
+                        <span
+                          className={`h-10 w-10 ${shapeClass(patternRound.missing.shape)} ${missingColorClass}`}
+                        />
+                      ) : (
+                        <span className="h-10 w-10 rounded-lg border-2 border-dashed border-slate-300" />
+                      )
+                    ) : (
+                      <span className={`h-10 w-10 ${shapeClass(slot.shape)} ${colorClass}`} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-6 grid grid-cols-3 gap-4">
+              {patternRound.choices.map((choice, index) => {
+                const colorClass = colorOptions.find((color) => color.id === choice.color)?.className ?? "bg-slate-200";
+                return (
+                  <button
+                    key={`${choice.shape}-${choice.color}-${index}`}
+                    type="button"
+                    onClick={() => handlePatternChoice(choice)}
+                    className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5"
+                    aria-label={`Choose ${choice.color} ${choice.shape}`}
+                  >
+                    <span className={`h-10 w-10 ${shapeClass(choice.shape)} ${colorClass}`} />
+                  </button>
+                );
+              })}
             </div>
           </GameCard>
 
           <GameCard title="Number Train" subtitle="Tap the numbers in order." className="games-fade games-fade-delay-2">
             <div className="flex items-center justify-between rounded-2xl border border-dashed border-slate-200 bg-white/70 p-5">
               <div className="text-sm text-slate-600">
-                <p>{trainMessage}</p>
                 {trainCorrect ? (
-                  <span className="mt-2 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
                     Correct!
                   </span>
-                ) : null}
+                ) : (
+                  <p>{trainMessage}</p>
+                )}
               </div>
               <button
                 type="button"
@@ -703,12 +944,13 @@ export default function GamesPage() {
                 </button>
               </div>
               <div className="text-sm text-slate-600">
-                <p>{soundMessage}</p>
                 {soundCorrect ? (
-                  <span className="mt-2 inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700">
                     Correct!
                   </span>
-                ) : null}
+                ) : (
+                  <p>{soundMessage}</p>
+                )}
               </div>
             </div>
             <div className="mt-6 grid grid-cols-3 gap-4">

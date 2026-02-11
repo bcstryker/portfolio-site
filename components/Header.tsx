@@ -36,7 +36,7 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 border-b border-transparent transition-all ${
-        scrolled ? "border-gray-200 bg-white/80 backdrop-blur" : "bg-white"
+        scrolled ? "border-gray-200 bg-[#f5f9ff]/90 backdrop-blur" : "bg-[#f5f9ff]"
       }`}
     >
       <nav className="container flex items-center justify-end py-4">

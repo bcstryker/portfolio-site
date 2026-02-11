@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import EmailActions from "@/components/EmailActions";
 import Header from "@/components/Header";
 import ProjectCard from "@/components/ProjectCard";
 import {certifications, education, experiences, profile, projects, skills, teaching} from "@/content/profile";
@@ -58,12 +59,13 @@ export default function Page() {
                 >
                   View work
                 </a>
-                <a
-                  href={`mailto:${profile.email}`}
+                <EmailActions
+                  email={profile.email}
+                  label="Start a project"
                   className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-brand hover:text-brand"
-                >
-                  Start a project
-                </a>
+                  helperPlacement="right"
+                  helperOrientation="row"
+                />
               </div>
             </div>
             <div className="card space-y-6">
@@ -256,9 +258,14 @@ export default function Page() {
             <div className="card space-y-4">
               <div>
                 <p className="text-sm font-semibold text-gray-500">Email</p>
-                <a className="text-lg font-semibold text-brand hover:underline" href={`mailto:${profile.email}`}>
-                  {profile.email}
-                </a>
+                <EmailActions
+                  email={profile.email}
+                  label={profile.email}
+                  className="text-lg font-semibold text-brand hover:underline"
+                  variant="link"
+                  helperPlacement="right"
+                  helperOrientation="row"
+                />
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-500">Connect</p>
@@ -278,7 +285,7 @@ export default function Page() {
         </section>
 
         <footer className="border-t border-gray-200 pb-16 pt-6 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Brandon Stryker. Built with Next.js and Tailwind CSS
+          © {new Date().getFullYear()} Brandon Stryker. All rights reserved.
         </footer>
       </main>
     </>

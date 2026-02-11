@@ -488,7 +488,11 @@ export default function GamesPage() {
     setSameDifferentRound(
       buildDifferent(
         buildSameDifferentRound,
-        (next) => next.different.id === sameDifferentRound.different.id && next.base.id === sameDifferentRound.base.id
+        (next) =>
+          next.different.shape === sameDifferentRound.different.shape &&
+          next.different.color === sameDifferentRound.different.color &&
+          next.base.shape === sameDifferentRound.base.shape &&
+          next.base.color === sameDifferentRound.base.color
       )
     );
     setSameDifferentMessage("Tap the one that is different.");

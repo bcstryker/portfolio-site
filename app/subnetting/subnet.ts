@@ -1,3 +1,5 @@
+import { evaluateCount } from './expression';
+
 export type Version = 4 | 6;
 export type Problem = { version: Version; address: string; prefix: number };
 
@@ -56,19 +58,19 @@ export function solve(problem: Problem) {
     { id: 'first', label: 'Network + 1', value: fmt(network + 1n), steps: [base[1], `Add 1 in hexadecimal to get ${fmt(network + 1n)}.`, 'This is an address arithmetic exercise, not a guarantee of host assignability. IPv6 has reserved addresses, including subnet-router anycast.'] },
     { id: 'last', label: 'Last address in block', value: fmt(last), steps: [base[1], `Set the remaining ${hostBits} bits to 1 (a full hexadecimal digit becomes f).`, `The range ends at ${fmt(last)}. This is not a broadcast address; IPv6 has no broadcast.`] },
     { id: 'next', label: 'Next prefix address', value: next < (1n << BigInt(bits)) ? fmt(next) : 'none', steps: [base[1], `Add 2^${hostBits} to the network, carrying between hexadecimal digits and hextets.`, `The next /${problem.prefix} block starts at ${next < (1n << BigInt(bits)) ? fmt(next) : 'outside the address space (enter none)'}.`] },
-    { id: 'count', label: 'Addresses in block', value: String(size), steps: [`Subtract the prefix length from 128: 128 − ${problem.prefix} = ${hostBits}.`, `Calculate 2^${hostBits} = ${size.toLocaleString('en-US')}.`, 'Count every address in the block. Do not subtract 2 as you would for conventional IPv4 usable hosts. Enter a decimal number.'] },
+    { id: 'count', label: 'Addresses in block', value: String(size), steps: [`Subtract the prefix length from 128: 128 − ${problem.prefix} = ${hostBits}.`, `Calculate 2^${hostBits} = ${size.toLocaleString('en-US')}.`, 'Count every address in the block. Do not subtract 2 as you would for conventional IPv4 usable hosts. Enter the count or an equivalent expression, such as 2^(128 − prefix length).'] },
   ];
   return { rows, hostBits, size, network };
 }
 
 export function isCorrect(input: string, answer: string, version: Version, count = false) {
   if (answer === 'none') return input.trim().toLowerCase() === 'none';
-  if (count) return /^\d+$/.test(input.trim()) && BigInt(input.trim()) === BigInt(answer);
+  if (count) return evaluateCount(input) === BigInt(answer);
   const parsed = parseAddress(input, version);
   return parsed !== null && parsed === parseAddress(answer, version);
 }
 
-export const prefixes = { 4: [8, 11, 16, 19, 20, 22, 24, 25, 26, 27, 28, 29, 30], 6: [32, 40, 48, 52, 56, 60, 64, 65, 73, 80, 96, 112, 120, 124, 126] };
+export const prefixes = { 4: [8, 11, 16, 19, 20, 22, 24, 25, 26, 27, 28, 29, 30], 6: [32, 40, 48, 52, 56, 60, 64, 65, 69, 73, 80, 96, 112, 120, 124, 126] };
 export function newProblem(version: Version, prefix?: number): Problem {
   const choices = prefixes[version];
   const p = prefix ?? choices[Math.floor(Math.random() * choices.length)];

@@ -125,3 +125,28 @@ The host can edit/remove the link. The link is stored on the room, so it survive
 lobby returns and game switches; removing it does not end an already-open call.
 Only HTTPS `meet.google.com/abc-defg-hij` meeting links are accepted. There is no
 Google OAuth setup, automatic call creation, or new environment variable required.
+
+## Inactive party cleanup
+
+Apply `20261105000800_inactive_party_cleanup.sql`. Successful host creation removes
+only game rooms whose `last_active_at` is more than one hour old. Associated private
+Candy Land decks are deleted by their foreign-key cascade. Other tables and guest
+accounts are not cleared. Cleanup and creation are one transaction; if creation
+fails, deletion rolls back. Rooms locked by another transaction are skipped.
+
+Room mutations update activity automatically. Each connected game/lobby client
+sends a heartbeat every minute, with database writes throttled to once per room
+per minute and no game-version increments. Existing rooms receive a fresh timestamp
+on migration. Cleanup is opportunistic when a new party is hosted, not a scheduled
+job. An expired saved room returns the client to host/join with an explanatory
+message instead of leaving it stuck reconnecting.
+
+## Manual host cleanup
+
+Apply `20261105000900_host_delete_other_parties.sql` for **Host tools → Delete all
+other parties**. The host must confirm permanent deletion of every other room,
+including active rooms and rooms created by other hosts. The current room is
+explicitly excluded and locked during deletion; only its host may invoke the RPC.
+Associated decks are deleted by cascade, but accounts and unrelated data remain.
+The operation reports how many parties were deleted. It has no one-hour grace
+period; automatic inactive cleanup remains a separate feature.

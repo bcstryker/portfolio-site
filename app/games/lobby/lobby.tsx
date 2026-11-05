@@ -92,7 +92,15 @@ export default function Lobby() {
 
   const loadRoom = useCallback(async (id: string) => {
     const {data, error: fetchError} = await getSupabase().from("game_rooms").select("*").eq("id", id).single();
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+      if (fetchError.code === "PGRST116") {
+        if (localStorage.getItem("games-room") === id) localStorage.removeItem("games-room");
+        setRoomId((current) => current === id ? null : current);
+        setRoom((current) => current?.id === id ? null : current);
+        throw new Error("This party is no longer available. Host a new party or join with a different key.");
+      }
+      throw fetchError;
+    }
     const next = normalizeGameRoom(data as Room);
     setRoom((current) => !current || current.id !== next.id || next.version >= current.version ? next : current);
   }, []);
@@ -109,6 +117,8 @@ export default function Lobby() {
         if (!active) return;
         await loadRoom(roomId);
         if (!active) return;
+        await supabase.rpc("touch_game_room", {room_id: roomId});
+        if (!active) return;
         channel = supabase.channel(`game:${roomId}`)
           .on("postgres_changes", {event: "UPDATE", schema: "public", table: "game_rooms", filter: `id=eq.${roomId}`}, () => {if (active) void refresh();})
           .subscribe((status) => {if (active) {setConnected(status === "SUBSCRIBED"); if (status === "SUBSCRIBED") void refresh();}});
@@ -116,9 +126,15 @@ export default function Lobby() {
     })();
     // Reconcile after reconnects, missed events, and backgrounding a mobile browser.
     const timer = window.setInterval(() => {if (active) void refresh();}, 1000);
-    const onFocus = () => void refresh();
+    const heartbeat = () => {
+      if (active) void getSupabase().rpc("touch_game_room", {room_id: roomId}).then(({error: heartbeatError}) => {
+        if (heartbeatError && active) void refresh();
+      });
+    };
+    const heartbeatTimer = window.setInterval(heartbeat, 60_000);
+    const onFocus = () => {heartbeat(); void refresh();};
     window.addEventListener("focus", onFocus);
-    return () => {active = false; clearInterval(timer); window.removeEventListener("focus", onFocus); if (channel) void getSupabase().removeChannel(channel);};
+    return () => {active = false; clearInterval(timer); clearInterval(heartbeatTimer); window.removeEventListener("focus", onFocus); if (channel) void getSupabase().removeChannel(channel);};
   }, [roomId, ready, loadRoom]);
 
   async function enter(event: React.FormEvent) {
@@ -172,6 +188,18 @@ export default function Lobby() {
       if (changeError) throw changeError;
       await loadRoom(room.id);
     } catch (cause) {setError(message(cause)); await loadRoom(room.id).catch(() => {});}
+    finally {actionPending.current = false; setBusy(false);}
+  }
+
+  async function deleteOtherParties() {
+    if (!room || room.host_id !== userId || actionPending.current) return;
+    if (!window.confirm("Permanently delete ALL other parties and their game data, including any active parties? Your current party will be kept. This cannot be undone.")) return;
+    actionPending.current = true; setBusy(true); setError(""); setNotice("");
+    try {
+      const {data, error: deleteError} = await getSupabase().rpc("delete_other_parties", {current_room_id: room.id});
+      if (deleteError) throw deleteError;
+      setNotice(`Deleted ${data} other ${data === 1 ? "party" : "parties"}. Your current party was kept.`);
+    } catch (cause) {setError(message(cause));}
     finally {actionPending.current = false; setBusy(false);}
   }
 
@@ -251,6 +279,11 @@ export default function Lobby() {
                 : room.last_move ? `${room.last_move.player} spun ${room.last_move.roll}. ${(room.last_move.destination ?? 0) > (room.last_move.landing ?? 0) ? "Up the ladder! " : (room.last_move.destination ?? 0) < (room.last_move.landing ?? 0) ? "Down the chute! " : ""}Now on square ${room.last_move.destination}.` : "The board is ready. Let’s roll!"}</p>
               {host && <button disabled={busy || revealActive} onClick={() => {if (room.status === "finished" || window.confirm("End this game and return everyone to the lobby?")) void act("reset");}}>Return everyone to lobby</button>}
             </>}
+            {host && <details className={styles.hostTools}>
+              <summary>Host tools</summary>
+              <p>Delete all other parties, including active ones. This party and its players stay connected.</p>
+              <button type="button" className={styles.dangerButton} disabled={busy} onClick={() => void deleteOtherParties()}>Delete all other parties</button>
+            </details>}
             <div className={styles.roomUtilities}>
               <details className={styles.rules}><summary>How to play</summary><p>{currentGame.rules}</p></details>
               <button onClick={exit} className={styles.exit} title="Your seat stays reserved. Use the same key in this browser to return.">Back to host or join</button>

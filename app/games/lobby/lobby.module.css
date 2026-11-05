@@ -23,7 +23,7 @@
 .page .primary:hover:not(:disabled) { background: #1e40af; }
 .small { font-size: 13px; color: #64748b; font-weight: normal; }
 .error { margin-bottom: 20px; padding: 16px 20px; border-radius: 14px; background: #fff1f2; border: 1px solid #fda4af; overflow-wrap: anywhere; }
-.roomBar { display: grid; grid-template-columns: 240px minmax(0, 1fr) 290px; align-items: start; gap: 24px; padding: 20px 24px; background: #ffffffc9; border-radius: 20px; margin-bottom: 24px; }
+.roomBar { display: grid; grid-template-columns: 240px fit-content(360px) minmax(0, 1fr); align-items: start; gap: 24px; padding: 20px 24px; background: #ffffffc9; border-radius: 20px; margin-bottom: 24px; }
 .code { font-family: monospace; font-size: 28px; font-weight: bold; letter-spacing: .16em; user-select: all; }
 .gameLayout { display: block; }
 .panel { display: grid; gap: 20px; }
@@ -132,10 +132,10 @@
 .copyNote:empty { display: none; }
 .tableSummary { min-width: 0; }
 .tableSummary h2, .roomControls h2 { font-size: 17px; font-weight: bold; margin: 0; }
-.tableSummary .players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-.tableSummary .players li { flex: 1 1 130px; padding: 8px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff9; gap: 8px; font-size: 13px; }
+.tableSummary .players { display: grid; grid-template-columns: minmax(0, max-content); gap: 10px; margin-top: 10px; max-width: 100%; }
+.tableSummary .players li { min-width: 0; padding: 8px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff9; gap: 8px; font-size: 13px; }
 .tableSummary .token { width: 25px; height: 25px; font-size: 12px; }
-.roomControls { display: grid; gap: 8px; min-width: 0; }
+.roomControls { display: grid; gap: 8px; min-width: 0; width: 100%; max-width: 400px; justify-self: end; }
 .roomControls > p { font-size: 13px; color: #475569; line-height: 1.5; }
 .roomUtilities { display: flex; flex-wrap: wrap; align-items: start; gap: 10px 16px; font-size: 12px; }
 .roomUtilities .rules { flex: 1 1 90px; }
@@ -154,7 +154,7 @@
 .strategyLayout { max-width: 760px; margin-inline: auto; }
 @media (max-width: 1050px) {
   .roomBar { grid-template-columns: 220px minmax(0, 1fr); gap: 16px; }
-  .roomControls { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+  .roomControls { grid-column: 1 / -1; max-width: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; border-top: 1px solid #e2e8f0; padding-top: 12px; }
   .roomControls > p { flex: 1 1 180px; }
   .roomUtilities { flex: 1 1 210px; }
   .raceLayout { grid-template-columns: 280px minmax(0, 1fr); gap: 16px; }
@@ -238,3 +238,9 @@
 .videoSettings label { display: grid; gap: 6px; font-weight: bold; }
 .videoSettings input { min-width: 0; width: 100%; padding: 9px; border: 1px solid #94a3b8; border-radius: 8px; background: white; font-weight: normal; font-size: 13px; }
 .videoError { color: #9f1239; font-size: 12px; overflow-wrap: anywhere; }
+
+.hostTools { font-size: 12px; }
+.hostTools summary { cursor: pointer; color: #9f1239; font-weight: bold; }
+.hostTools p { color: #64748b; line-height: 1.5; margin: 8px 0; }
+.page .dangerButton { color: #9f1239; border-color: #fda4af; background: #fff1f2; }
+.page .dangerButton:hover:not(:disabled) { background: #ffe4e6; }

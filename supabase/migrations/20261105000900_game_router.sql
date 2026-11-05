@@ -5,6 +5,9 @@
 -- The router does everything common (membership, version, turns, animations, start/reset/kick); games only
 -- implement their own moves. Adding a game = a `games` row, those two functions, and one line in each dispatcher below.
 
+-- Users removed by the host. Player ids are anonymous Supabase Auth ids, which anyone can replace by clearing
+-- browser data, so this stops casual rejoining but is NOT a strong ban. Real protection needs captcha on
+-- anonymous sign-ins and/or a lockable room.
 alter table public.game_rooms add column banned uuid[] not null default '{}';
 
 -- What a game hands back to the router. Every field is authoritative; apply must return the room's current

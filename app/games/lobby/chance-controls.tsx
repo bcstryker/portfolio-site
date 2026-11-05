@@ -5,7 +5,7 @@ import styles from "./lobby.module.css";
 
 export type ChanceMove = {
   player: string; player_id?: string; roll?: number; landing?: number; destination?: number; slot?: number;
-  event_id?: string; started_at?: string; ends_at?: string; from_position?: number;
+  event_id?: string; started_at?: string; ends_at?: string; from_space?: number;
   color?: number; matches?: number; remaining?: number;
 };
 export const candyColors = [

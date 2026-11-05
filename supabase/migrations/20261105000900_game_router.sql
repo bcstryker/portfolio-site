@@ -152,6 +152,7 @@ begin
       target := (payload ->> 'player_id')::uuid;
     exception when others then raise exception 'Choose a player to remove.';
     end;
+    if target is null then raise exception 'Choose a player to remove.'; end if;
     if target = room.host_id then raise exception 'The host cannot be removed.'; end if;
     if public.game_seat(room.players, target) is null then raise exception 'That player is not in this room.'; end if;
     update public.game_rooms set

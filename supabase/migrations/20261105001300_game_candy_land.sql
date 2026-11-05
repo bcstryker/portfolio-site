@@ -40,7 +40,7 @@ declare
   destination integer;
   n integer;
   event_start timestamptz := clock_timestamp() + interval '300 milliseconds';
-  event_end timestamptz := clock_timestamp() + interval '2700 milliseconds';
+  event_end timestamptz := event_start + interval '2400 milliseconds';
   won boolean;
 begin
   if action <> 'draw' then raise exception 'Unknown action.'; end if;

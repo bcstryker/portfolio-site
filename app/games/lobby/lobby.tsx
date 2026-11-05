@@ -3,15 +3,16 @@
 import Link from "next/link";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {getSupabase} from "@/lib/supabase";
-import {gameOptions, isGameType, normalizeGameRoom, type GameType} from "@/lib/games";
+import {gameOptions, isGameType, normalizeGameRoom, type GameType, type Piece} from "@/lib/games";
 import PartyVideo from "./party-video";
 import ConnectFour from "./connect-four";
 import ChanceControls, {candyColors, type ChanceMove} from "./chance-controls";
 import styles from "./lobby.module.css";
 
-type Player = {id: string; name: string; position: number};
+type Player = {id: string; name: string};
 type Room = {
-  game_type: GameType; board: number[]; winning_cells: number[];
+  game_type: GameType; state: Record<string, unknown>; options: Record<string, unknown>;
+  board: number[]; winning_cells: number[]; pieces: Piece[];
   id: string; code: string; host_id: string; players: Player[];
   status: "waiting" | "playing" | "finished"; turn_index: number; version: number; winner_id: string | null;
   last_move: ChanceMove | null;
@@ -110,7 +111,14 @@ export default function Lobby() {
     let active = true;
     let channel: ReturnType<ReturnType<typeof getSupabase>["channel"]> | undefined;
     setConnected(false);
-    const refresh = () => loadRoom(roomId).catch(() => {if (active) setConnected(false);});
+    const refresh = () => loadRoom(roomId).catch((cause) => {
+      if (!active) return;
+      setConnected(false);
+      // The room row is invisible to someone who was removed from it.
+      if (typeof cause === "object" && cause !== null && "code" in cause && cause.code === "PGRST116") {
+        localStorage.removeItem("games-room"); setRoomId(null); setRoom(null); setError("You are no longer in this room.");
+      }
+    });
     void (async () => {
       try {
         const supabase = await authenticate();
@@ -169,11 +177,11 @@ export default function Lobby() {
     finally {actionPending.current = false; setBusy(false);}
   }
 
-  async function act(action: "start" | "roll" | "reset" | "play" | "spin" | "draw", move?: number) {
+  async function act(action: "start" | "reset" | "kick" | "play" | "spin" | "draw", payload: Record<string, unknown> = {}) {
     if (!room || actionPending.current) return;
     actionPending.current = true; setBusy(true); setError("");
     try {
-      const {error: actionError} = await getSupabase().rpc("game_action", {room_id: room.id, action, expected_version: room.version, ...(move === undefined ? {} : {move})});
+      const {error: actionError} = await getSupabase().rpc("game_action", {room_id: room.id, action, expected_version: room.version, payload});
       if (actionError) throw actionError;
       await loadRoom(room.id);
     } catch (cause) {setError(message(cause)); await loadRoom(room.id).catch(() => {});}
@@ -220,7 +228,8 @@ export default function Lobby() {
   const currentGame = gameOptions[room?.game_type ?? "chutes-and-ladders"];
   const gridGame = room?.game_type === "tic-tac-toe" || room?.game_type === "connect-four";
   const candyGame = room?.game_type === "candy-land";
-  const visiblePosition = (player: Player) => revealActive && room?.last_move?.player_id === player.id ? room.last_move.from_position ?? player.position : player.position;
+  const pieceSpace = (player: Player) => room?.pieces.find((piece) => piece.owner === player.id)?.space ?? 0;
+  const visiblePosition = (player: Player) => revealActive && room?.last_move?.player_id === player.id ? room.last_move.from_space ?? pieceSpace(player) : pieceSpace(player);
   const canMove = !busy && !revealActive && !discDropping && room?.status === "playing" && turn?.id === userId;
 
   return <main className={styles.page}>
@@ -265,6 +274,7 @@ export default function Lobby() {
               <span className={styles.token} style={{background: gridGame && i === 1 ? "#a16207" : colors[i]}}>{room.game_type === "tic-tac-toe" ? (i === 0 ? "X" : "O") : i + 1}</span>
               <div><strong>{player.name}{player.id === userId ? " (you)" : ""}</strong><span>{player.id === room.host_id ? "Host · " : ""}{room.status === "waiting" ? "Ready to play" : gridGame ? (room.game_type === "tic-tac-toe" ? (i === 0 ? "Playing X" : "Playing O") : (i === 0 ? "Red discs" : "Yellow discs")) : `Square ${visiblePosition(player)}`}</span></div>
               {room.status === "playing" && turn?.id === player.id && <span aria-label="Current turn">←</span>}
+              {host && room.status === "waiting" && player.id !== userId && <button type="button" disabled={busy} onClick={() => {if (window.confirm(`Remove ${player.name} from the party?`)) void act("kick", {player_id: player.id});}}>Remove</button>}
             </li>)}</ol>
           </div>
           <div className={styles.roomControls}>
@@ -337,8 +347,8 @@ export default function Lobby() {
             </div> : gridGame ? <div className={styles.strategyPanel}>
               <h2>{currentGame.name}</h2>
               {room.game_type === "tic-tac-toe" ? <div className={styles.ticBoard}>
-                {room.board.map((mark, index) => <button type="button" key={index} className={`${styles.ticCell} ${room.winning_cells.includes(index) ? styles.winning : ""}`} disabled={!canMove || mark !== 0} aria-label={`Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}: ${mark ? mark === 1 ? "X" : "O" : "empty"}`} onClick={() => void act("play", index)}>{mark ? mark === 1 ? "X" : "O" : ""}</button>)}
-              </div> : <ConnectFour key={room.id} roomId={room.id} version={room.version} board={room.board} winningCells={room.winning_cells} lastSlot={room.last_move?.slot} canMove={canMove} playerMark={room.players.findIndex((player) => player.id === userId) + 1} onMove={(column) => void act("play", column)} onDroppingChange={setDiscDropping} />}
+                {room.board.map((mark, index) => <button type="button" key={index} className={`${styles.ticCell} ${room.winning_cells.includes(index) ? styles.winning : ""}`} disabled={!canMove || mark !== 0} aria-label={`Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}: ${mark ? mark === 1 ? "X" : "O" : "empty"}`} onClick={() => void act("play", {move: index})}>{mark ? mark === 1 ? "X" : "O" : ""}</button>)}
+              </div> : <ConnectFour key={room.id} roomId={room.id} version={room.version} board={room.board} winningCells={room.winning_cells} lastSlot={room.last_move?.slot} canMove={canMove} playerMark={room.players.findIndex((player) => player.id === userId) + 1} onMove={(column) => void act("play", {move: column})} onDroppingChange={setDiscDropping} />}
               <p className={styles.legend}>{room.status === "finished" ? "Game over. The host can return everyone to the lobby for a rematch." : canMove ? room.game_type === "tic-tac-toe" ? "Choose an empty square." : "Choose a column to drop your disc." : `Waiting for ${turn?.name} to move.`}</p>
             </div> : <div className={styles.trackBoard}>
             <div className={styles.board}>{squares.map((square) => <div key={square} className={`${styles.square} ${jumps[square] ? jumps[square] > square ? styles.ladder : styles.chute : ""}`}>

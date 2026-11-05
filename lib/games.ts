@@ -9,13 +9,21 @@ export function isGameType(value: unknown): value is GameType {
   return typeof value === "string" && Object.hasOwn(gameOptions, value);
 }
 
-// Rooms fetched before the strategy-game migration have none of these columns.
-export function normalizeGameRoom<T extends {game_type?: unknown; board?: unknown; winning_cells?: unknown}>(room: T) {
-  const gameType = room.game_type ?? "chutes-and-ladders";
+export type Piece = {id: string; owner: string; space: number};
+
+// A room's `state` is empty while it is waiting and is owned by the selected game once it starts
+// (see docs/game-platform.md). This lifts the common parts out so the UI can read them directly.
+export function normalizeGameRoom<T extends {game_type?: unknown; status?: unknown; state?: unknown}>(room: T) {
+  const gameType = room.game_type;
   if (!isGameType(gameType)) throw new Error("This room uses an unsupported game.");
-  const board = Array.isArray(room.board) ? room.board as number[] : [];
-  const winningCells = Array.isArray(room.winning_cells) ? room.winning_cells as number[] : [];
+  const state = (room.state && typeof room.state === "object" && !Array.isArray(room.state) ? room.state : {}) as Record<string, unknown>;
+  const board = Array.isArray(state.board) ? state.board as number[] : [];
+  const winningCells = Array.isArray(state.winning_cells) ? state.winning_cells as number[] : [];
+  const pieces = Array.isArray(state.pieces) ? state.pieces as Piece[] : [];
+  const lastMove = state.last_move && typeof state.last_move === "object" ? state.last_move : null;
   const expectedSize = gameType === "tic-tac-toe" ? 9 : gameType === "connect-four" ? 42 : 0;
-  if (board.length !== expectedSize) throw new Error("This game’s board is unavailable. Please check that the latest game migration has deployed.");
-  return {...room, game_type: gameType, board, winning_cells: winningCells};
+  if (room.status !== "waiting" && board.length !== expectedSize) throw new Error("This game’s board is unavailable. Please check that the latest game migration has deployed.");
+  return {...room, game_type: gameType, state, board, winning_cells: winningCells, pieces, last_move: lastMove} as T & {
+    state: Record<string, unknown>; board: number[]; winning_cells: number[]; pieces: Piece[]; last_move: unknown;
+  };
 }

@@ -1,0 +1,53 @@
+.page { min-height: 100vh; padding: 28px 20px 64px; background: radial-gradient(ellipse at top, #fef9c3, transparent 55%), linear-gradient(#ecfdf5, #eff6ff); color: #0f172a; font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
+.wrap { max-width: 1200px; margin: auto; }
+.back { font-size: 14px; font-weight: bold; }
+.header { padding: 40px 0 30px; }
+.header h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.1; margin: 10px 0 16px; }
+.header p, .form p, .panel p { color: #475569; line-height: 1.6; }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .2em; font-weight: bold; }
+.entry { max-width: 720px; margin: 0 auto; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.page button { border-radius: 12px; border: 1px solid #94a3b8; background: white; padding: 12px 18px; font-weight: bold; cursor: pointer; transition: background .15s; }
+.page button:hover:not(:disabled) { background: #f1f5f9; }
+.page button:disabled { opacity: .55; cursor: not-allowed; }
+.page :is(button, input, a, summary):focus-visible { outline: 3px solid #0369a1; outline-offset: 4px; }
+.choices button { padding: 24px 16px; text-align: left; font-size: 20px; border: 2px solid white; box-shadow: 0 6px 0 #0f172a12; }
+.choices button[aria-pressed="true"] { background: #dbeafe; border-color: #2563eb; }
+.choices span { display: block; font-size: 13px; color: #475569; margin-top: 8px; font-weight: normal; }
+.form, .panel { padding: 28px; border-radius: 24px; background: #ffffffdb; border: 2px solid white; box-shadow: 0 12px 32px #0f172a08; }
+.form { display: grid; gap: 20px; }
+.form h2, .panel h2 { font-size: 21px; font-weight: bold; }
+.form label { display: grid; gap: 8px; font-weight: bold; }
+.form input { border: 1px solid #94a3b8; border-radius: 12px; padding: 14px; width: 100%; background: white; font-weight: normal; }
+.page .primary { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+.page .primary:hover:not(:disabled) { background: #1e40af; }
+.small { font-size: 13px; color: #64748b; font-weight: normal; }
+.error, .notice { margin-bottom: 20px; padding: 16px 20px; border-radius: 14px; background: #fff1f2; border: 1px solid #fda4af; overflow-wrap: anywhere; }
+.notice { background: #ecfdf5; border-color: #6ee7b7; }
+.roomBar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 20px 24px; background: #ffffffc9; border-radius: 20px; margin-bottom: 24px; }
+.code { font-family: monospace; font-size: 28px; font-weight: bold; letter-spacing: .16em; user-select: all; }
+.gameLayout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 24px; align-items: start; }
+.panel { display: grid; gap: 20px; }
+.players { display: grid; gap: 16px; }
+.players li { display: flex; gap: 12px; align-items: center; overflow-wrap: anywhere; }
+.players li div { flex: 1; min-width: 0; }
+.players li strong { display: block; }
+.players li div span { font-size: 12px; color: #64748b; }
+.token, .piece { border-radius: 50%; color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+.token { width: 30px; height: 30px; }
+.boardPanel { min-width: 0; }
+.board { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); border: 3px solid #fff; border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 12px 32px #0f172a12; }
+.square { position: relative; aspect-ratio: 1; background: #eff6ff; border: 1px solid white; min-width: 0; }
+.square:nth-child(even) { background: #e0e7ff; }
+.square.ladder { background: #bbf7d0; }
+.square.chute { background: #fecdd3; }
+.number { position: absolute; top: 3px; left: 4px; font-size: clamp(9px, 1.2vw, 13px); font-weight: bold; }
+.jump { position: absolute; top: 3px; right: 3px; font-size: clamp(8px, 1.1vw, 12px); }
+.pieces { position: absolute; inset: 40% 1px 1px; display: flex; justify-content: center; align-content: center; flex-wrap: wrap; gap: 1px; }
+.piece { width: clamp(10px, 1.6vw, 19px); height: clamp(10px, 1.6vw, 19px); font-size: clamp(7px, 1vw, 11px); border: 1px solid white; }
+.legend { margin-top: 16px; font-size: 13px; color: #475569; line-height: 1.6; }
+.rules summary { cursor: pointer; font-weight: bold; }
+.rules p { margin-top: 12px; font-size: 14px; }
+.page .exit { border: 0; padding: 0; background: transparent; justify-self: start; text-decoration: underline; }
+@media (max-width: 850px) { .gameLayout { grid-template-columns: 1fr; } .boardPanel { grid-row: 1; } .panel { padding: 22px; } .number { font-size: 11px; } .jump { font-size: 10px; } .piece { width: 14px; height: 14px; font-size: 9px; } }
+@media (max-width: 420px) { .page { padding-inline: 12px; } .choices { gap: 10px; } .choices button { font-size: 18px; padding: 18px 12px; } .number { font-size: 9px; top: 1px; left: 2px; } .jump { font-size: 8px; top: 1px; right: 1px; } .piece { width: 10px; height: 10px; font-size: 7px; } }

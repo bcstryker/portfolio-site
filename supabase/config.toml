@@ -1,0 +1,4 @@
+project_id = "portfolio-site-games"
+
+[db.seed]
+enabled = false

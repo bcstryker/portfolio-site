@@ -150,3 +150,26 @@ explicitly excluded and locked during deletion; only its host may invoke the RPC
 Associated decks are deleted by cascade, but accounts and unrelated data remain.
 The operation reports how many parties were deleted. It has no one-hour grace
 period; automatic inactive cleanup remains a separate feature.
+
+## Game platform rebuild (read before deploying)
+
+Migrations `20261105000800` through `20261105001300` replace the earlier game tables and
+functions with a generic platform: a `games` registry, a router (`game_action`) that does
+the checks every game shares, and one small rules module per game. Adding a game no longer
+means re-pasting a giant function. See [docs/game-platform.md](docs/game-platform.md) for
+the design and the steps to add a game.
+
+**`20261105000800_game_platform_rebuild.sql` drops and recreates `game_rooms`, so any
+existing rooms are lost.** It is meant for a database with no live users. Apply all of
+`0800`–`1300` together: the first migration removes the old functions and the later ones
+recreate them.
+
+Host removal ("Remove" next to a player in the lobby) is new. The `/api/games/host` endpoint
+is unchanged.
+
+```bash
+node --test tests/*.test.cjs
+```
+
+The database tests run every migration in an in-process Postgres (PGlite), so they need no
+Supabase project.

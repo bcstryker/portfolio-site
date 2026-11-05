@@ -13,6 +13,7 @@ const links = [
   {href: "#projects", label: "Projects"},
   {href: "#teaching", label: "Teaching"},
   {href: "/games", label: "Games"},
+  {href: "/solo-games", label: "Solo games"},
   {href: "#contact", label: "Contact"},
 ];
 

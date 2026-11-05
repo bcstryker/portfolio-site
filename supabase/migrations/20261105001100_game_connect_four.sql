@@ -3,7 +3,7 @@
 --         winning_cells: [..] (the whole connected run, 4 or more), last_move: {player, slot}}
 -- action 'play' with payload {"move": 0..6} (the column). The disc falls to the lowest empty row.
 
-create function public.game_connect_four_init(options jsonb, player_count integer)
+create function public.game_connect_four_init(options jsonb, players jsonb)
 returns public.game_result language plpgsql immutable set search_path = '' as $$
 begin
   return row(
@@ -77,5 +77,5 @@ begin
 end;
 $$;
 
-revoke all on function public.game_connect_four_init(jsonb, integer),
+revoke all on function public.game_connect_four_init(jsonb, jsonb),
   public.game_connect_four_apply(public.game_rooms, jsonb, integer, text, jsonb) from public, anon, authenticated;

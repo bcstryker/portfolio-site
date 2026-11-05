@@ -2,7 +2,7 @@
 -- state: {board: [9 ints, 0 empty / 1 X (seat 0) / 2 O (seat 1)], winning_cells: [..], last_move: {player, slot}}
 -- action 'play' with payload {"move": 0..8}. The router has already checked membership, turn and room status.
 
-create function public.game_tic_tac_toe_init(options jsonb, player_count integer)
+create function public.game_tic_tac_toe_init(options jsonb, players jsonb)
 returns public.game_result language plpgsql immutable set search_path = '' as $$
 begin
   return row(
@@ -53,5 +53,5 @@ begin
 end;
 $$;
 
-revoke all on function public.game_tic_tac_toe_init(jsonb, integer),
+revoke all on function public.game_tic_tac_toe_init(jsonb, jsonb),
   public.game_tic_tac_toe_apply(public.game_rooms, jsonb, integer, text, jsonb) from public, anon, authenticated;

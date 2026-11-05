@@ -1,6 +1,6 @@
 -- Generic room handling and the game_action router.
 -- Each game supplies two functions (added in the next migration):
---   game_<id>_init(options jsonb, player_count integer)                              returns game_result
+--   game_<id>_init(options jsonb, players jsonb)                                      returns game_result
 --   game_<id>_apply(room game_rooms, private jsonb, seat integer, action text, payload jsonb) returns game_result
 -- The router does everything common (membership, version, turns, animations, start/reset/kick); games only
 -- implement their own moves. Adding a game = a `games` row, those two functions, and one line in each dispatcher below.
@@ -31,14 +31,14 @@ returns integer language sql immutable set search_path = '' as $$
 $$;
 
 -- Dispatchers: the only places that name individual games.
-create function public.game_init(game_type text, options jsonb, player_count integer)
+create function public.game_init(game_type text, options jsonb, players jsonb)
 returns public.game_result language plpgsql set search_path = '' as $$
 begin
   -- if/elsif (not a CASE expression) so only the chosen game's function has to exist when this runs.
-  if game_type = 'tic-tac-toe' then return public.game_tic_tac_toe_init(options, player_count);
-  elsif game_type = 'connect-four' then return public.game_connect_four_init(options, player_count);
-  elsif game_type = 'chutes-and-ladders' then return public.game_chutes_and_ladders_init(options, player_count);
-  elsif game_type = 'candy-land' then return public.game_candy_land_init(options, player_count);
+  if game_type = 'tic-tac-toe' then return public.game_tic_tac_toe_init(options, players);
+  elsif game_type = 'connect-four' then return public.game_connect_four_init(options, players);
+  elsif game_type = 'chutes-and-ladders' then return public.game_chutes_and_ladders_init(options, players);
+  elsif game_type = 'candy-land' then return public.game_candy_land_init(options, players);
   end if;
   return null;
 end;
@@ -55,7 +55,7 @@ begin
   return null;
 end;
 $$;
-revoke all on function public.game_seat(jsonb, uuid), public.game_init(text, jsonb, integer),
+revoke all on function public.game_seat(jsonb, uuid), public.game_init(text, jsonb, jsonb),
   public.game_apply(public.game_rooms, jsonb, integer, text, jsonb) from public, anon, authenticated;
 
 -- Create a room. Called only by the password-checking server endpoint (service_role).
@@ -171,7 +171,7 @@ begin
     if count_players < g.min_players or count_players > g.max_players then
       raise exception '% needs % to % players.', g.name, g.min_players, g.max_players;
     end if;
-    result := public.game_init(room.game_type, room.options, count_players);
+    result := public.game_init(room.game_type, room.options, room.players);
     if result is null then raise exception 'This game is not available.'; end if;
     delete from public.game_private where game_private.room_id = room.id;
 

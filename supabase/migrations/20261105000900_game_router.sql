@@ -34,26 +34,25 @@ $$;
 create function public.game_init(game_type text, options jsonb, player_count integer)
 returns public.game_result language plpgsql set search_path = '' as $$
 begin
-  return case game_type
-    when 'tic-tac-toe' then public.game_tic_tac_toe_init(options, player_count)
-    when 'connect-four' then public.game_connect_four_init(options, player_count)
-    when 'chutes-and-ladders' then public.game_chutes_and_ladders_init(options, player_count)
-    when 'candy-land' then public.game_candy_land_init(options, player_count)
-    else null
-  end;
+  -- if/elsif (not a CASE expression) so only the chosen game's function has to exist when this runs.
+  if game_type = 'tic-tac-toe' then return public.game_tic_tac_toe_init(options, player_count);
+  elsif game_type = 'connect-four' then return public.game_connect_four_init(options, player_count);
+  elsif game_type = 'chutes-and-ladders' then return public.game_chutes_and_ladders_init(options, player_count);
+  elsif game_type = 'candy-land' then return public.game_candy_land_init(options, player_count);
+  end if;
+  return null;
 end;
 $$;
 
 create function public.game_apply(room public.game_rooms, private jsonb, seat integer, action text, payload jsonb)
 returns public.game_result language plpgsql set search_path = '' as $$
 begin
-  return case room.game_type
-    when 'tic-tac-toe' then public.game_tic_tac_toe_apply(room, private, seat, action, payload)
-    when 'connect-four' then public.game_connect_four_apply(room, private, seat, action, payload)
-    when 'chutes-and-ladders' then public.game_chutes_and_ladders_apply(room, private, seat, action, payload)
-    when 'candy-land' then public.game_candy_land_apply(room, private, seat, action, payload)
-    else null
-  end;
+  if room.game_type = 'tic-tac-toe' then return public.game_tic_tac_toe_apply(room, private, seat, action, payload);
+  elsif room.game_type = 'connect-four' then return public.game_connect_four_apply(room, private, seat, action, payload);
+  elsif room.game_type = 'chutes-and-ladders' then return public.game_chutes_and_ladders_apply(room, private, seat, action, payload);
+  elsif room.game_type = 'candy-land' then return public.game_candy_land_apply(room, private, seat, action, payload);
+  end if;
+  return null;
 end;
 $$;
 revoke all on function public.game_seat(jsonb, uuid), public.game_init(text, jsonb, integer),

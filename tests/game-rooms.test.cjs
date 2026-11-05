@@ -10,7 +10,7 @@ test('room membership, host permissions, turn validation, and stale move protect
   const outsider = '00000000-0000-0000-0000-000000000003';
   try {
     await db.exec(`
-      create role anon; create role authenticated;
+      create role anon; create role authenticated; create role service_role;
       create schema auth;
       create table auth.users(id uuid primary key);
       create function auth.uid() returns uuid language sql as
@@ -21,13 +21,20 @@ test('room membership, host permissions, turn validation, and stale move protect
       create publication supabase_realtime;
     `);
     await db.exec(readFileSync('supabase/migrations/20261105000100_game_rooms.sql', 'utf8'));
+    await db.exec(readFileSync('supabase/migrations/20261105000200_password_protected_hosting.sql', 'utf8'));
+    await db.exec(readFileSync('supabase/migrations/20261105000300_two_player_games.sql', 'utf8'));
+    await db.exec(readFileSync('supabase/migrations/20261105000400_candy_land_and_shared_reveals.sql', 'utf8'));
     const asUser = async (id) => {
       await db.exec('reset role');
       await db.query("select set_config('request.jwt.claim.sub', $1, false)", [id]);
       await db.exec('set role authenticated');
     };
     await asUser(host);
-    const {rows: [{id}]} = await db.query("select public.host_game('Host') as id");
+    await assert.rejects(db.query("select public.host_game('Host', $1)", [host]), /permission denied/);
+    await assert.rejects(db.query("select public.host_game('Host')"), /does not exist/);
+    await db.exec('reset role; set role service_role');
+    const {rows: [{id}]} = await db.query("select public.host_game('Host', $1) as id", [host]);
+    await asUser(host);
     const {rows: [room]} = await db.query('select * from public.game_rooms where id = $1', [id]);
     assert.match(room.code, /^[A-F0-9]{8}$/);
     await assert.rejects(db.query("select public.game_action($1, 'start', 0)", [id]), /at least two/);

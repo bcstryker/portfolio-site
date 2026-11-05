@@ -3,6 +3,7 @@ export const gameOptions = {
   "chutes-and-ladders": {name: "Chutes and Ladders", maxPlayers: 8, rules: "Take turns spinning the wheel for a number from 1 to 6. Land at a ladder’s foot to climb, or a chute’s top to slide. Reach 100 with an exact spin to win; if you overshoot, stay put."},
   "tic-tac-toe": {name: "Tic Tac Toe", maxPlayers: 2, rules: "X goes first. Take turns choosing an empty square. Three in a row horizontally, vertically, or diagonally wins. A full board without a winner is a draw."},
   "connect-four": {name: "Connect Four", maxPlayers: 2, rules: "Red goes first. Choose a column to drop a disc into its lowest empty space. Four in a row horizontally, vertically, or diagonally wins. A full board without a winner is a draw."},
+  "memory": {name: "Memory", maxPlayers: 2, rules: "Take turns flipping two cards. A matching pair is yours and you go again; a miss passes the turn. Whoever collects the most pairs wins. On hard mode the names are hidden and each match asks you to pick the right name for a bonus point."},
 } as const;
 export type GameType = keyof typeof gameOptions;
 export function isGameType(value: unknown): value is GameType {
@@ -21,8 +22,9 @@ export function normalizeGameRoom<T extends {game_type?: unknown; status?: unkno
   const winningCells = Array.isArray(state.winning_cells) ? state.winning_cells as number[] : [];
   const pieces = Array.isArray(state.pieces) ? state.pieces as Piece[] : [];
   const lastMove = state.last_move && typeof state.last_move === "object" ? state.last_move : null;
-  const expectedSize = gameType === "tic-tac-toe" ? 9 : gameType === "connect-four" ? 42 : 0;
-  if (room.status !== "waiting" && board.length !== expectedSize) throw new Error("This game’s board is unavailable. Please check that the latest game migration has deployed.");
+  // Grid games have a fixed board size; Memory's depends on its options, so it only needs to have one.
+  const boardMissing = gameType === "tic-tac-toe" ? board.length !== 9 : gameType === "connect-four" ? board.length !== 42 : gameType === "memory" ? board.length === 0 : false;
+  if (room.status !== "waiting" && boardMissing) throw new Error("This game’s board is unavailable. Please check that the latest game migration has deployed.");
   return {...room, game_type: gameType, state, board, winning_cells: winningCells, pieces, last_move: lastMove} as T & {
     state: Record<string, unknown>; board: number[]; winning_cells: number[]; pieces: Piece[]; last_move: unknown;
   };

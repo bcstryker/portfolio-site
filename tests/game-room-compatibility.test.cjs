@@ -32,6 +32,13 @@ test('track games expose their pieces and last move', () => {
   assert.equal(room.pieces, pieces);
   assert.equal(room.last_move.roll, 3);
 });
+test('Memory accepts any board size but needs a board once it has started', () => {
+  for (const size of [16, 36, 100]) {
+    const room = normalizeGameRoom({game_type: 'memory', status: 'playing', state: {board: Array(size).fill(null)}});
+    assert.equal(room.board.length, size);
+  }
+  assert.throws(() => normalizeGameRoom({game_type: 'memory', status: 'playing', state: {}}), /migration/);
+});
 test('missing, unknown, and board-less games produce recoverable errors', () => {
   assert.throws(() => normalizeGameRoom({}), /unsupported game/);
   assert.throws(() => normalizeGameRoom({game_type: 'unknown'}), /unsupported game/);

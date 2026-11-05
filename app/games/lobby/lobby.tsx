@@ -6,6 +6,7 @@ import {getSupabase} from "@/lib/supabase";
 import {gameOptions, isGameType, normalizeGameRoom, type GameType, type Piece} from "@/lib/games";
 import PartyVideo from "./party-video";
 import ConnectFour from "./connect-four";
+import Memory, {type MemoryOptions, type MemoryState} from "./memory";
 import ChanceControls, {candyColors, type ChanceMove} from "./chance-controls";
 import styles from "./lobby.module.css";
 
@@ -177,7 +178,7 @@ export default function Lobby() {
     finally {actionPending.current = false; setBusy(false);}
   }
 
-  async function act(action: "start" | "reset" | "kick" | "play" | "spin" | "draw", payload: Record<string, unknown> = {}) {
+  async function act(action: "start" | "reset" | "kick" | "play" | "spin" | "draw" | "flip" | "answer", payload: Record<string, unknown> = {}) {
     if (!room || actionPending.current) return;
     actionPending.current = true; setBusy(true); setError("");
     try {
@@ -188,11 +189,13 @@ export default function Lobby() {
     finally {actionPending.current = false; setBusy(false);}
   }
 
-  async function changeGame(nextGame: string) {
-    if (!room || actionPending.current || !isGameType(nextGame) || nextGame === room.game_type) return;
+  // Choosing a different game uses that game's default options; passing options re-applies the current game with changes.
+  async function changeGame(nextGame: string, gameOptions?: Record<string, unknown>) {
+    if (!room || actionPending.current || !isGameType(nextGame) || (nextGame === room.game_type && !gameOptions)) return;
     actionPending.current = true; setBusy(true); setError("");
     try {
-      const {error: changeError} = await getSupabase().rpc("change_party_game", {room_id: room.id, selected_game: nextGame, expected_version: room.version});
+      const options = gameOptions ? {...(nextGame === room.game_type ? room.options : {}), ...gameOptions} : {};
+      const {error: changeError} = await getSupabase().rpc("change_party_game", {room_id: room.id, selected_game: nextGame, expected_version: room.version, game_options: options});
       if (changeError) throw changeError;
       await loadRoom(room.id);
     } catch (cause) {setError(message(cause)); await loadRoom(room.id).catch(() => {});}
@@ -228,6 +231,9 @@ export default function Lobby() {
   const currentGame = gameOptions[room?.game_type ?? "chutes-and-ladders"];
   const gridGame = room?.game_type === "tic-tac-toe" || room?.game_type === "connect-four";
   const candyGame = room?.game_type === "candy-land";
+  const memoryGame = room?.game_type === "memory";
+  const chanceGame = !gridGame && !memoryGame;
+  const memoryScore = (player: Player) => (room?.state.scores as Record<string, number> | undefined)?.[player.id] ?? 0;
   const pieceSpace = (player: Player) => room?.pieces.find((piece) => piece.owner === player.id)?.space ?? 0;
   const visiblePosition = (player: Player) => revealActive && room?.last_move?.player_id === player.id ? room.last_move.from_space ?? pieceSpace(player) : pieceSpace(player);
   const canMove = !busy && !revealActive && !discDropping && room?.status === "playing" && turn?.id === userId;
@@ -272,7 +278,7 @@ export default function Lobby() {
             <h2>At the table <span className={styles.small}>{room.players.length}/{room.status === "waiting" ? 8 : currentGame.maxPlayers}</span></h2>
             <ol className={styles.players}>{room.players.map((player, i) => <li key={player.id}>
               <span className={styles.token} style={{background: gridGame && i === 1 ? "#a16207" : colors[i]}}>{room.game_type === "tic-tac-toe" ? (i === 0 ? "X" : "O") : i + 1}</span>
-              <div><strong>{player.name}{player.id === userId ? " (you)" : ""}</strong><span>{player.id === room.host_id ? "Host · " : ""}{room.status === "waiting" ? "Ready to play" : gridGame ? (room.game_type === "tic-tac-toe" ? (i === 0 ? "Playing X" : "Playing O") : (i === 0 ? "Red discs" : "Yellow discs")) : `Square ${visiblePosition(player)}`}</span></div>
+              <div><strong>{player.name}{player.id === userId ? " (you)" : ""}</strong><span>{player.id === room.host_id ? "Host · " : ""}{room.status === "waiting" ? "Ready to play" : gridGame ? (room.game_type === "tic-tac-toe" ? (i === 0 ? "Playing X" : "Playing O") : (i === 0 ? "Red discs" : "Yellow discs")) : memoryGame ? `${memoryScore(player)} point${memoryScore(player) === 1 ? "" : "s"}` : `Square ${visiblePosition(player)}`}</span></div>
               {room.status === "playing" && turn?.id === player.id && <span aria-label="Current turn">←</span>}
               {host && room.status === "waiting" && player.id !== userId && <button type="button" disabled={busy} onClick={() => {if (window.confirm(`Remove ${player.name} from the party?`)) void act("kick", {player_id: player.id});}}>Remove</button>}
             </li>)}</ol>
@@ -284,7 +290,7 @@ export default function Lobby() {
               <p>{host ? "Share your key, then choose a game below." : "Hang out here while the host chooses a game."}</p>
             </> : <>
               <h2 aria-live="polite">{revealActive ? `${room.last_move?.player} is ${candyGame ? "drawing…" : "spinning…"}` : winner ? `${winner.name} wins!` : room.status === "finished" ? "It’s a draw!" : turn?.id === userId ? "Your turn!" : `${turn?.name}’s turn`}</h2>
-              <p aria-live="polite">{revealActive ? "Let’s see where you’ll go!" : candyGame ? (room.last_move ? `${room.last_move.player} moved to ${room.last_move.destination === 61 ? "the candy castle" : `square ${room.last_move.destination}`}.` : "Draw a card and follow the rainbow!") : gridGame
+              <p aria-live="polite">{revealActive ? "Let’s see where you’ll go!" : memoryGame ? (room.status === "finished" ? "Every pair has been taken." : canMove ? "Flip two cards and look for a match." : `Waiting for ${turn?.name} to flip.`) : candyGame ? (room.last_move ? `${room.last_move.player} moved to ${room.last_move.destination === 61 ? "the candy castle" : `square ${room.last_move.destination}`}.` : "Draw a card and follow the rainbow!") : gridGame
                 ? (room.last_move?.slot !== undefined ? `${room.last_move.player} ${room.game_type === "connect-four" ? `dropped a disc in column ${room.last_move.slot % 7 + 1}` : `played square ${room.last_move.slot + 1}`}.` : "The board is ready. The host goes first.")
                 : room.last_move ? `${room.last_move.player} spun ${room.last_move.roll}. ${(room.last_move.destination ?? 0) > (room.last_move.landing ?? 0) ? "Up the ladder! " : (room.last_move.destination ?? 0) < (room.last_move.landing ?? 0) ? "Down the chute! " : ""}Now on square ${room.last_move.destination}.` : "The board is ready. Let’s roll!"}</p>
               {host && <button disabled={busy || revealActive} onClick={() => {if (room.status === "finished" || window.confirm("End this game and return everyone to the lobby?")) void act("reset");}}>Return everyone to lobby</button>}
@@ -307,19 +313,29 @@ export default function Lobby() {
           </div>
           <div className={styles.partyGames}>{Object.entries(gameOptions).map(([id, game]) => {
             const full = room.players.length > game.maxPlayers;
-            const icons: Record<string, string> = {"candy-land": "🍭", "chutes-and-ladders": "🪜", "tic-tac-toe": "✕ ○", "connect-four": "🔴 🟡"};
+            const icons: Record<string, string> = {"candy-land": "🍭", "chutes-and-ladders": "🪜", "tic-tac-toe": "✕ ○", "connect-four": "🔴 🟡", "memory": "🃏"};
             return <button key={id} type="button" disabled={busy || !host || full} aria-pressed={room.game_type === id} onClick={() => void changeGame(id)} className={`${styles.partyGameCard} ${full ? styles.unavailableGame : ""}`}>
               <span aria-hidden="true" className={styles.gameIcon}>{icons[id]}</span>
               <strong>{game.name}</strong><span>{game.maxPlayers === 2 ? "2 players" : "2–8 players"}</span>
               <small>{full ? "Party too large · 2 players only" : room.game_type === id ? "Selected for your party ✓" : host ? "Choose this game" : "Host chooses the game"}</small>
             </button>;
           })}</div>
+          {memoryGame && <div className={styles.memoryOptions}>
+            <h3>Memory settings</h3>
+            {host ? <>
+              <label>Board size<select value={Number(room.options.size ?? 6)} disabled={busy} onChange={(event) => void changeGame("memory", {size: Number(event.target.value)})}>
+                {[4, 6, 8, 10].map((n) => <option key={n} value={n}>{n} × {n} ({n * n / 2} pairs)</option>)}
+              </select></label>
+              <label><input type="checkbox" checked={room.options.showNames !== false} disabled={busy} onChange={(event) => void changeGame("memory", {showNames: event.target.checked})} /> Show flag names</label>
+              <p className={styles.small}>Turn names off for hard mode: each match asks you to pick the right name for a bonus point.</p>
+            </> : <p>{String(room.options.size ?? 6)} × {String(room.options.size ?? 6)} board · {room.options.showNames === false ? "hard mode (names hidden)" : "names shown"}</p>}
+          </div>}
           <div className={styles.lobbyStart}>
             <div><strong>{currentGame.name}</strong><p>{room.players.length < 2 ? "Share your key to invite another player." : room.players.length > currentGame.maxPlayers ? "Choose a game that fits everyone in your party." : `${room.players.length} players ready to play.`}</p></div>
             {host ? <button type="button" className={styles.primary} disabled={busy || room.players.length < 2 || room.players.length > currentGame.maxPlayers} onClick={() => void act("start")}>Start {currentGame.name} →</button> : <p role="status">Waiting for the host to start…</p>}
           </div>
         </section> : <div className={styles.gameLayout}>
-          <section className={`${styles.boardPanel} ${!gridGame ? styles.raceLayout : styles.strategyLayout}`} aria-label={`${currentGame.name} board`}>
+          <section className={`${styles.boardPanel} ${chanceGame ? styles.raceLayout : styles.strategyLayout}`} aria-label={`${currentGame.name} board`}>
             {room.status === "finished" && !revealActive && !discDropping && <div ref={resultRef} key={`${room.id}-${room.version}`} className={`${styles.resultBanner} ${winner ? styles.resultWin : styles.resultTie}`} role="status" aria-live="polite" aria-atomic="true">
               {winner && <div className={styles.confetti} aria-hidden="true">{Array.from({length: 16}, (_, index) => <span key={index} style={{left: `${4 + index * 6}%`, background: colors[index % colors.length], animationDelay: `${(index % 5) * 90}ms`}} />)}</div>}
               <span className={styles.resultIcon} aria-hidden="true">{winner ? "🏆" : "🤝"}</span>
@@ -329,8 +345,13 @@ export default function Lobby() {
               {host ? <button type="button" className={styles.primary} disabled={busy} onClick={() => void act("reset")}>Back to lobby for a rematch</button> : <p className={styles.small}>Waiting for the host to set up the next round.</p>}
             </div>}
 
-            {!gridGame && <ChanceControls candy={candyGame} move={room.last_move} active={revealActive} canMove={canMove} busy={busy} onAction={() => void act(candyGame ? "draw" : "spin")} />}
-            {candyGame ? <div className={styles.candyBoardPanel}>
+            {chanceGame && <ChanceControls candy={candyGame} move={room.last_move} active={revealActive} canMove={canMove} busy={busy} onAction={() => void act(candyGame ? "draw" : "spin")} />}
+            {memoryGame ? <div className={styles.strategyPanel}>
+              <h2>Memory</h2>
+              <Memory state={room.state as unknown as MemoryState} options={room.options as MemoryOptions} players={room.players} userId={userId}
+                canMove={canMove} busy={busy} onFlip={(index) => void act("flip", {i: index})} onAnswer={(pick) => void act("answer", {pick})} />
+              <p className={styles.legend}>{room.status === "finished" ? "Game over. The host can return everyone to the lobby for a rematch." : "Match a pair to keep your turn. A miss passes it."}</p>
+            </div> : candyGame ? <div className={styles.candyBoardPanel}>
               <h2>Follow the rainbow</h2>
               <div className={styles.candyCastle}><span aria-hidden="true">🏰 🍬</span><strong>Candy Castle · Finish!</strong><span className={styles.finishPieces}>{room.players.map((player, i) => visiblePosition(player) === 61 ? <span key={player.id} className={styles.token} style={{background: colors[i]}} title={player.name}>{i + 1}</span> : null)}</span></div>
               <div className={styles.candyPath}>{Array.from({length: 60}, (_, index) => {

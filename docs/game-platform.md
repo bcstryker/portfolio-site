@@ -104,6 +104,18 @@ field exactly as returned, so `apply` must return the room's current value for a
    component under `app/games/lobby/`, reading `room.state` / `room.options`.
 4. **Tests**: add rules tests (see below).
 
+## Worked example: Memory
+
+`20261105001400_game_memory.sql` is the first game written against this platform and shows each extension point:
+
+- **Options**: board size, card set and hard mode arrive in `options`; `game_memory_init` validates them and
+  raises if they are bad, so errors appear when the host starts the game.
+- **Hidden state**: the shuffled deck is in `game_private`; only flipped cards are copied into `state.board`.
+- **Data owned by the game**: card sets live in their own table (`memory_sets`) read by the client and by the
+  rules. Pictures are static files under `public/memory/<set>/<card id>.png`.
+- **Dispatchers**: the migration ends with `create or replace` of `game_init` and `game_apply` adding one line each.
+- **UI**: `app/games/lobby/memory.tsx` renders the board; the lobby shows a settings panel for the host.
+
 ## Testing
 
 Run the migrations in order against a throwaway Postgres (for example `podman run postgres:16`) with a small

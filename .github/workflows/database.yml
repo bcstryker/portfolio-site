@@ -89,6 +89,9 @@ jobs:
       - name: Record explicitly verified SQL Editor migrations
         if: env.OPERATION == 'record-applied'
         run: node scripts/record-applied-migrations.cjs
+      - name: Adopt the consolidated baseline without changing application data
+        if: env.OPERATION == 'deploy'
+        run: node scripts/adopt-migration-baseline.cjs
       - name: Preview pending migrations
         if: env.OPERATION == 'deploy' || env.OPERATION == 'record-applied'
         run: supabase db push --linked --dry-run

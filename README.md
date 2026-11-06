@@ -151,6 +151,14 @@ Associated decks are deleted by cascade, but accounts and unrelated data remain.
 The operation reports how many parties were deleted. It has no one-hour grace
 period; automatic inactive cleanup remains a separate feature.
 
+## Automatic database deployment
+
+See [Database CI/CD](docs/database-deployment.md) for the GitHub Actions workflow,
+the three required deployment secrets, and the one-time reconciliation of SQL
+Editor migrations. PRs test the complete migration chain; merges to `main` apply
+pending migrations automatically after checks pass. Vercel's website deployment
+is separate. No manual SQL copy/paste is needed once history is reconciled.
+
 ## Game platform rebuild (read before deploying)
 
 Migrations `20261105001000` through `20261105001600` (the last adds Memory) replace the earlier game tables and

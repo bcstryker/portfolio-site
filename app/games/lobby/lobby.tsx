@@ -7,7 +7,8 @@ import {gameOptions, isGameType, normalizeGameRoom, type GameType, type Piece} f
 import PartyVideo from "./party-video";
 import ConnectFour from "./connect-four";
 import Memory, {type MemoryOptions, type MemoryState} from "./memory";
-import ChanceControls, {candyColors, type ChanceMove} from "./chance-controls";
+import InviteQr from "./invite-qr";
+import ChanceControls,{candyColors, type ChanceMove} from "./chance-controls";
 import styles from "./lobby.module.css";
 
 type Player = {id: string; name: string};
@@ -31,6 +32,7 @@ export default function Lobby() {
   const [name, setName] = useState("");
   const [hostPassword, setHostPassword] = useState("");
   const [key, setKey] = useState("");
+  const [autoJoin, setAutoJoin] = useState(false);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [room, setRoom] = useState<Room | null>(null);
   const [userId, setUserId] = useState("");
@@ -73,9 +75,18 @@ export default function Lobby() {
     if (invite) {setKey(invite.toUpperCase()); setMode("join");}
     const saved = localStorage.getItem("games-room");
     if (saved && !invite && !requestedMode) setRoomId(saved);
-    setName(localStorage.getItem("games-name") ?? "");
+    const savedName = localStorage.getItem("games-name") ?? "";
+    setName(savedName);
+    // An invite link joins right away when this browser already knows the player's name.
+    if (invite && savedName.trim()) setAutoJoin(true);
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!ready || !autoJoin) return;
+    setAutoJoin(false);
+    void enter();
+  });
 
   const authenticate = async () => {
     const supabase = getSupabase();
@@ -146,8 +157,8 @@ export default function Lobby() {
     return () => {active = false; clearInterval(timer); clearInterval(heartbeatTimer); window.removeEventListener("focus", onFocus); if (channel) void getSupabase().removeChannel(channel);};
   }, [roomId, ready, loadRoom]);
 
-  async function enter(event: React.FormEvent) {
-    event.preventDefault();
+  async function enter(event?: React.FormEvent) {
+    event?.preventDefault();
     if (actionPending.current) return;
     actionPending.current = true; setBusy(true); setError(""); setNotice("");
     try {
@@ -271,6 +282,7 @@ export default function Lobby() {
               <button onClick={() => void copy(room.code)}>Copy key</button>
               <button onClick={() => void copy(`${window.location.origin}/games/lobby?key=${room.code}`)}>Copy invite link</button>
             </div>
+            <InviteQr url={`${window.location.origin}/games/lobby?key=${room.code}`} />
             <span className={styles.small} role="status">{connected ? "Live updates connected" : "Checking for updates every second"}</span>
             <span className={styles.copyNote} role="status" aria-live="polite">{notice}</span>
           </div>

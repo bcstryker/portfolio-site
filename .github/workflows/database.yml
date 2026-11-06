@@ -7,16 +7,16 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: Inspect history, deploy pending migrations, or record manually applied migrations
+        description: Inspect, deploy, reconcile history, or rebuild the disposable application database
         type: choice
-        options: [inspect, deploy, record-applied]
+        options: [inspect, deploy, record-applied, rebuild]
         default: inspect
       applied_versions:
         description: For record-applied only — exact verified migration timestamps, separated by commas or spaces
         type: string
         default: ''
       confirmation:
-        description: For record-applied only — type I VERIFIED THESE MIGRATIONS ARE ALREADY APPLIED
+        description: For rebuild type REBUILD APPLICATION DATABASE; for record-applied type I VERIFIED THESE MIGRATIONS ARE ALREADY APPLIED
         type: string
         default: ''
 
@@ -83,6 +83,9 @@ jobs:
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
       - name: Show local and remote migration history
         run: supabase migration list --linked
+      - name: Rebuild the disposable application database and apply all migrations
+        if: env.OPERATION == 'rebuild'
+        run: node scripts/rebuild-database.cjs
       - name: Record explicitly verified SQL Editor migrations
         if: env.OPERATION == 'record-applied'
         run: node scripts/record-applied-migrations.cjs

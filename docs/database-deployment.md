@@ -45,7 +45,30 @@ On first setup, leave `SUPABASE_AUTO_DEPLOY` unset. Pushes to `main` then run
 checks and inspect history only; they do not apply pending SQL. Manual `deploy`
 remains available for the first verified deployment.
 
-## First deployment: reconcile previous SQL Editor executions
+## First deployment with disposable application data (clean rebuild)
+
+If the existing database objects/data are disposable, use this instead of recording
+old SQL Editor migrations. Do not delete tables manually: functions, types, and
+migration history also need to be reset coherently.
+
+1. Commit/push the workflow update containing the `rebuild` operation to `main`.
+2. Actions → Database migrations → Run workflow → branch `main`.
+3. Choose operation `rebuild`; leave `applied_versions` empty.
+4. Enter confirmation `REBUILD APPLICATION DATABASE`.
+5. This runs `supabase db reset --linked --no-seed --yes`: it drops user-created
+   database objects/data in the linked project, then executes all committed
+   migrations in order and records fresh migration history. This is broader than
+   deleting only game-room rows. Never use it if unrelated application data must
+   be retained. Supabase project settings and cluster-level roles are not recreated
+   by this script; this is not project deletion.
+6. Once it succeeds, set repository Actions variable `SUPABASE_AUTO_DEPLOY=true`.
+   Subsequent main merges apply only pending migrations; they never select rebuild.
+
+A rebuild is manual-only, requires the exact confirmation, and shares the normal
+production concurrency lock and test gate. It does not require paid branching or
+another credential. It is destructive and not a rollback operation.
+
+## First deployment while preserving application data: reconcile SQL Editor executions
 
 Files run through SQL Editor may already exist in the schema without corresponding
 rows in migration history. Do not blindly deploy/reapply them or mark all 16 applied.
@@ -80,7 +103,7 @@ preserved. The workflow does not erase Auth users or reset the whole database.
 
 ## Manual controls
 
-`inspect`, `record-applied`, and `deploy` are available through Run workflow on
+`inspect`, `record-applied`, `rebuild`, and `deploy` are available through Run workflow on
 `main`. Production steps are refused on feature branches. `inspect` and history
 repair still run the isolated checks first. The workflow must be committed and
 pushed to GitHub; local files do not enable Actions.

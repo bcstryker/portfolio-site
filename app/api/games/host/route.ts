@@ -45,7 +45,13 @@ export async function POST(request: Request) {
     const authClient = createClient(url, publishableKey, options);
     // Resolve the verified guest identity; never accept a user ID from the browser.
     const {data, error} = await authClient.auth.getUser(token);
-    if (error || !data.user) return reply({error: "Your guest session expired. Please try again."}, 401);
+    if (error) {
+      if (!error.status || error.status >= 500 || error.status === 429) {
+        return reply({error: "Could not verify your guest session right now. Please try again shortly."}, 503);
+      }
+      return reply({error: "Your guest session is no longer valid. Refresh the page to reconnect."}, 401);
+    }
+    if (!data.user) return reply({error: "Your guest session is no longer valid. Refresh the page to reconnect."}, 401);
     const admin = createClient(url, secretKey, options);
     const result = await admin.rpc("host_game", {
       display_name: body.displayName.trim(),

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {useCallback, useEffect, useRef, useState} from "react";
+import {ensureGuestSession} from "@/lib/guest-session";
 import {getSupabase} from "@/lib/supabase";
 import {gameOptions, isGameType, normalizeGameRoom, type GameType, type Piece} from "@/lib/games";
 import PartyVideo from "./party-video";
@@ -90,16 +91,8 @@ export default function Lobby() {
 
   const authenticate = async () => {
     const supabase = getSupabase();
-    const {data, error: sessionError} = await supabase.auth.getSession();
-    if (sessionError) throw sessionError;
-    let id = data.session?.user.id;
-    if (!id) {
-      const result = await supabase.auth.signInAnonymously();
-      if (result.error) throw result.error;
-      id = result.data.user?.id;
-    }
-    if (!id) throw new Error("Could not start a guest session. Please try again.");
-    setUserId(id);
+    const session = await ensureGuestSession(supabase);
+    setUserId(session.user.id);
     return supabase;
   };
 

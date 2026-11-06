@@ -50,9 +50,9 @@ export default function ConnectFour({roomId, version, board, winningCells, lastS
   }, [canMove, fall, board]);
 
   const preview = hovered ?? focused;
-  return <div className={styles.connectGame}>
+  return <div className={styles.connectGame} onMouseLeave={() => setHovered(null)}>
     <p className={styles.keyboardHint}>Click a column or press <kbd>1</kbd>–<kbd>7</kbd> to drop your disc.</p>
-    <div className={styles.connectDropRow} onMouseLeave={() => setHovered(null)}>
+    <div className={styles.connectDropRow}>
       {Array.from({length: 7}, (_, column) => {
         const enabled = canMove && !fall && board[column] === 0;
         return <button type="button" key={column} className={styles.dropTarget} aria-label={`Drop a disc in column ${column + 1}`} aria-keyshortcuts={String(column + 1)} disabled={!enabled}
@@ -67,6 +67,15 @@ export default function ConnectFour({roomId, version, board, winningCells, lastS
       {board.map((mark, index) => <span key={index} className={styles.connectHole} role="img" aria-label={`Row ${Math.floor(index / 7) + 1}, column ${index % 7 + 1}: ${mark ? mark === 1 ? "red disc" : "yellow disc" : "empty"}`}>
         {mark !== 0 && <span key={fall?.slot === index ? fall.key : `settled-${index}`} className={`${styles.placedDisc} ${mark === 1 ? styles.redDisc : styles.yellowDisc} ${fall?.slot === index ? styles.fallingDisc : ""} ${!fall && winningCells.includes(index) ? styles.winningDisc : ""}`} style={{"--fall-rows": Math.floor(index / 7) + 1} as CSSProperties} />}
       </span>)}
+      <div className={styles.connectColumnTargets}>
+        {Array.from({length: 7}, (_, column) => {
+          const enabled = canMove && !fall && board[column] === 0;
+          return <button type="button" key={column} className={styles.columnTarget}
+            aria-label={`Drop a disc in column ${column + 1}`} tabIndex={-1} disabled={!enabled}
+            onMouseEnter={() => setHovered(column)}
+            onClick={() => {if (enabled) choose.current(column);}} />;
+        })}
+      </div>
     </div>
   </div>;
 }

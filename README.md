@@ -153,15 +153,15 @@ period; automatic inactive cleanup remains a separate feature.
 
 ## Game platform rebuild (read before deploying)
 
-Migrations `20261105000800` through `20261105001400` (the last adds Memory) replace the earlier game tables and
+Migrations `20261105001000` through `20261105001600` (the last adds Memory) replace the earlier game tables and
 functions with a generic platform: a `games` registry, a router (`game_action`) that does
 the checks every game shares, and one small rules module per game. Adding a game no longer
 means re-pasting a giant function. See [docs/game-platform.md](docs/game-platform.md) for
 the design and the steps to add a game.
 
-**`20261105000800_game_platform_rebuild.sql` drops and recreates `game_rooms`, so any
+**`20261105001000_game_platform_rebuild.sql` drops and recreates `game_rooms`, so any
 existing rooms are lost.** It is meant for a database with no live users. Apply all of
-`0800`–`1400` together: the first migration removes the old functions and the later ones
+`1000`–`1600` together: the first migration removes the old functions and the later ones
 recreate them.
 
 Host removal ("Remove" next to a player in the lobby) is new. The `/api/games/host` endpoint

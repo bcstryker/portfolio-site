@@ -79,6 +79,14 @@ begin
   if (select count(*) from public.game_rooms where host_id = user_id and created_at > now() - interval '1 hour') >= 10 then
     raise exception 'Too many rooms created. Please use an existing room or try later.';
   end if;
+  -- Remove parties idle for over an hour (their hidden data cascades). Rooms locked by another
+  -- transaction are skipped; this rolls back if creating the new room fails.
+  with expired as (
+    select id from public.game_rooms
+    where last_active_at < clock_timestamp() - interval '1 hour'
+    for update skip locked
+  )
+  delete from public.game_rooms where id in (select id from expired);
   loop
     room_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
     begin

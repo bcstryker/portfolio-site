@@ -1,7 +1,7 @@
 # Game platform
 
 How the multiplayer games work and how to add a new one. All rules run inside Postgres (Supabase); the browser
-only calls RPCs and reads the room row. Migrations `20261105000800` onward define everything described here.
+only calls RPCs and reads the room row. Migrations `20261105001000` onward define everything described here.
 
 ## Concepts
 
@@ -98,7 +98,7 @@ field exactly as returned, so `apply` must return the room's current value for a
 1. **Migration**: insert into `games` (id, name, min/max players, `default_options`), then define the two
    functions above, and revoke execute on them from `public, anon, authenticated`.
 2. **Dispatchers**: in the same migration, `create or replace` `game_init` and `game_apply` (see
-   `20261105000900_game_router.sql`) to add one `elsif` line each. They use `if/elsif`, not `CASE`, so a game
+   `20261105001100_game_router.sql`) to add one `elsif` line each. They use `if/elsif`, not `CASE`, so a game
    whose functions are missing cannot break the others.
 3. **TypeScript**: add the game to `lib/games.ts` (name, player limits, rules text) and write its board
    component under `app/games/lobby/`, reading `room.state` / `room.options`.
@@ -106,7 +106,7 @@ field exactly as returned, so `apply` must return the room's current value for a
 
 ## Worked example: Memory
 
-`20261105001400_game_memory.sql` is the first game written against this platform and shows each extension point:
+`20261105001600_game_memory.sql` is the first game written against this platform and shows each extension point:
 
 - **Options**: board size, card set and hard mode arrive in `options`; `game_memory_init` validates them and
   raises if they are bad, so errors appear when the host starts the game.

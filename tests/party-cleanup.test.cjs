@@ -27,7 +27,7 @@ test('hosting cleans up only inactive parties and their decks, preserving active
       await db.exec('set role authenticated');
     }
     const expired = await create(); const active = await create(); const heartbeatRoom = await create(); const fresh = await create();
-    await db.query('insert into public.game_decks values ($1, ARRAY[1,2,3])', [expired]);
+    await db.query(`insert into public.game_private values ($1, '{"deck":[1,2,3]}')`, [expired]);
     // Backdate fixtures without allowing the activity trigger to replace the dates.
     await db.exec('alter table public.game_rooms disable trigger game_room_activity');
     await db.query("update public.game_rooms set created_at = now() - interval '2 days', last_active_at = now() - interval '2 hours' where id = any($1::uuid[])", [[expired, heartbeatRoom]]);
@@ -50,7 +50,7 @@ test('hosting cleans up only inactive parties and their decks, preserving active
     const ids = (await db.query('select id from public.game_rooms')).rows.map(r => r.id);
     assert.ok(!ids.includes(expired));
     for (const id of [active, heartbeatRoom, fresh, newRoom]) assert.ok(ids.includes(id));
-    assert.equal((await db.query('select * from public.game_decks')).rows.length, 0);
+    assert.equal((await db.query('select * from public.game_private')).rows.length, 0);
     assert.equal((await db.query('select * from auth.users')).rows.length, 2);
     await asUser(host);
     await assert.rejects(db.query('select public.touch_game_room($1)', [expired]), /no longer available/);
@@ -58,7 +58,7 @@ test('hosting cleans up only inactive parties and their decks, preserving active
     await db.exec('reset role; set role service_role');
     const otherHostRoom = (await db.query("select public.host_game('Other host', $1)", [outsider])).rows[0].host_game;
     await db.exec('reset role');
-    await db.query('insert into public.game_decks values ($1, ARRAY[1,2])', [otherHostRoom]);
+    await db.query(`insert into public.game_private values ($1, '{"deck":[1,2]}')`, [otherHostRoom]);
     await asUser(outsider);
     await assert.rejects(db.query('select public.delete_other_parties($1)', [newRoom]), /Only the host/);
     await assert.rejects(db.query('select public.delete_other_parties(null)'), /Only the host/);
@@ -71,7 +71,7 @@ test('hosting cleans up only inactive parties and their decks, preserving active
     assert.equal((await db.query('select public.delete_other_parties($1) as count', [newRoom])).rows[0].count, 0);
     await db.exec('reset role');
     assert.deepEqual((await db.query('select id from public.game_rooms')).rows.map(r => r.id), [newRoom]);
-    assert.equal((await db.query('select * from public.game_decks')).rows.length, 0);
+    assert.equal((await db.query('select * from public.game_private')).rows.length, 0);
     assert.equal((await db.query('select * from auth.users')).rows.length, 2);
   } finally {await db.close();}
 });

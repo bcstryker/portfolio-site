@@ -48,8 +48,10 @@ create table public.game_rooms (
   state jsonb not null default '{}',
   turn_ready_at timestamptz,
   meet_url text check (meet_url is null or meet_url ~ '^https://meet[.]google[.]com/[a-z]{3}-[a-z]{4}-[a-z]{3}$'),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  last_active_at timestamptz not null default now()
 );
+create index game_rooms_last_active_at_idx on public.game_rooms (last_active_at);
 create index game_rooms_host_created_idx on public.game_rooms (host_id, created_at);
 create index game_rooms_created_idx on public.game_rooms (created_at);
 
@@ -60,6 +62,19 @@ create policy "Members can read their room" on public.game_rooms
 for select to authenticated using (
   players @> jsonb_build_array(jsonb_build_object('id', (select auth.uid())::text))
 );
+
+-- Every update marks the room active (used by the inactive-party cleanup and touch_game_room, which are
+-- defined in 20261105000800 / 000900 and keep working unchanged against this table).
+create or replace function public.mark_game_room_active()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  new.last_active_at := clock_timestamp();
+  return new;
+end;
+$$;
+revoke all on function public.mark_game_room_active() from public, anon, authenticated;
+create trigger game_room_activity before update on public.game_rooms
+for each row execute function public.mark_game_room_active();
 
 -- Hidden state. No policies and no grants: only security definer functions can touch it.
 create table public.game_private (
